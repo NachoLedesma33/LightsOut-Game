@@ -1,0 +1,5 @@
+export { Home } from './Home'
+export { Game } from './Game'
+export { Statistics } from './Statistics'
+export { Achievements } from './Achievements'
+export { SettingsPage as Settings } from './Settings'
