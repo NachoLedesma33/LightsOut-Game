@@ -16,4 +16,13 @@ export interface GridSize {
 export interface GameConfig {
   mode: GameMode
   size: number
+  seed?: number
+}
+
+export interface GameSnapshot {
+  grid: boolean[][]
+  moveCount: number
+  moves: Move[]
+  status: GameStatus
+  elapsedTime: number
 }
