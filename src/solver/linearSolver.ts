@@ -228,7 +228,6 @@ export function solveLightsOut(board: boolean[][]): SolverResult {
 
 export function checkSolubility(board: boolean[][]): SolubilityResult {
   const size = board.length
-  const N = size * size
   const A = buildAdjacencyMatrix(size)
   const b = board.flat().map((v) => (v ? 1 : 0))
 
