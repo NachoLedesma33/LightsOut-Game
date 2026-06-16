@@ -1,22 +1,51 @@
-import { useParams, useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
+import { useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ArrowLeft, RotateCcw, Lightbulb, Undo2 } from 'lucide-react'
+import { ArrowLeft, RotateCcw, Lightbulb, Undo2, Sparkles } from 'lucide-react'
 import { Button } from '../components/ui'
 import { PageTransition } from '../components/layout'
 import { useGameStore } from '../stores/gameStore'
 import { formatTime } from '../lib/utils'
+import { getDifficultyLabel } from '../core/difficulty'
+import { getAvailableDifficulties, getDefaultDifficulty } from '../core/difficulty'
+import type { DifficultyTier } from '../core/types'
+import { cn } from '../lib/utils'
+
+const difficultyColors: Record<DifficultyTier, string> = {
+  easy: 'text-[var(--color-success)]',
+  medium: 'text-[var(--color-primary)]',
+  hard: 'text-[var(--color-accent)]',
+  expert: 'text-[var(--color-error)]',
+}
+
+const difficultyBorders: Record<DifficultyTier, string> = {
+  easy: 'border-[var(--color-success)]',
+  medium: 'border-[var(--color-primary)]',
+  hard: 'border-[var(--color-accent)]',
+  expert: 'border-[var(--color-error)]',
+}
 
 export function Game() {
   const { size } = useParams()
+  const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const gridSize = Number(size) || 5
+
+  const urlDifficulty = searchParams.get('d') as DifficultyTier | null
+
+  const difficulty = useMemo(() => {
+    if (urlDifficulty && (getAvailableDifficulties(gridSize) as string[]).includes(urlDifficulty)) {
+      return urlDifficulty
+    }
+    return getDefaultDifficulty(gridSize)
+  }, [urlDifficulty, gridSize])
 
   const {
     grid,
     status,
     moveCount,
     elapsedTime,
+    difficulty: storeDifficulty,
     initGame,
     makeMove,
     reset,
@@ -24,14 +53,15 @@ export function Game() {
   } = useGameStore()
 
   useEffect(() => {
-    initGame(gridSize)
+    initGame(gridSize, difficulty)
     return () => {
       useGameStore.getState().destroy()
     }
-  }, [gridSize])
+  }, [gridSize, difficulty])
 
   const cellSize = Math.max(28, Math.min(56, Math.floor(380 / gridSize)))
   const gap = gridSize >= 8 ? 1 : gridSize >= 6 ? 2 : 3
+  const diffLabel = getDifficultyLabel(storeDifficulty)
 
   return (
     <PageTransition>
@@ -42,9 +72,13 @@ export function Game() {
             <span className="hidden sm:inline">Volver</span>
           </Button>
 
-          <div className="flex items-center gap-3">
-            <span className="text-sm font-bold text-[var(--color-text-muted)] uppercase">
-              {gridSize}×{gridSize}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className={cn(
+              'text-[10px] sm:text-xs font-bold px-1.5 py-0.5 border-[var(--border-width)] uppercase',
+              difficultyBorders[storeDifficulty],
+              difficultyColors[storeDifficulty],
+            )}>
+              {diffLabel}
             </span>
             <span className="font-bold font-mono text-base sm:text-lg tabular-nums">
               {formatTime(elapsedTime)}
@@ -58,7 +92,13 @@ export function Game() {
           </div>
         </div>
 
+        <div className="flex items-center gap-2 text-sm font-bold text-[var(--color-text-muted)]">
+          <Lightbulb size={14} />
+          <span>{gridSize}×{gridSize}</span>
+        </div>
+
         <motion.div
+          key={`${gridSize}-${difficulty}`}
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.25, ease: 'easeOut' }}
@@ -82,7 +122,6 @@ export function Game() {
                 disabled={disabled}
                 style={{ minHeight: `${cellSize}px` }}
                 className="aspect-square cursor-pointer transition-all duration-100 border-[var(--border-width)] border-[var(--color-border)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_var(--color-shadow)] disabled:cursor-not-allowed disabled:active:translate-x-0 disabled:active:translate-y-0"
-                data-on={isOn}
               >
                 <div
                   className="w-full h-full transition-colors duration-150"
@@ -139,18 +178,20 @@ export function Game() {
                 animate={{ rotate: 0, scale: 1 }}
                 transition={{ type: 'spring', damping: 12, stiffness: 200, delay: 0.15 }}
               >
-                <Lightbulb
+                <Sparkles
                   size={64}
                   className="mx-auto mb-4 text-[var(--color-primary)]"
                 />
               </motion.div>
               <h2 className="text-2xl font-black mb-2">¡Ganaste!</h2>
+              <p className="text-[var(--color-text-muted)] mb-2">
+                {gridSize}×{gridSize} · {diffLabel}
+              </p>
               <p className="text-[var(--color-text-muted)] mb-6">
-                Resolviste el tablero en {moveCount} movimientos
-                {elapsedTime > 0 && ` y ${formatTime(elapsedTime)}`}.
+                {moveCount} movimientos {elapsedTime > 0 && `en ${formatTime(elapsedTime)}`}
               </p>
               <div className="flex gap-3 justify-center">
-                <Button variant="primary" onClick={() => initGame(gridSize)}>
+                <Button variant="primary" onClick={() => initGame(gridSize, storeDifficulty)}>
                   Nueva partida
                 </Button>
                 <Button variant="ghost" onClick={() => navigate('/')}>

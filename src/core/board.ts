@@ -1,3 +1,6 @@
+import type { DifficultyTier } from './types'
+import { getMovesCount } from './difficulty'
+
 export class Board {
   readonly size: number
   private grid: boolean[][]
@@ -92,7 +95,6 @@ export class Board {
   static generateSolvable(size: number, movesCount: number, seed?: number): Board {
     const rng = seed !== undefined ? createRng(seed) : Math.random
     const board = new Board(size)
-
     const total = size * size
     let remaining = movesCount
 
@@ -103,6 +105,26 @@ export class Board {
       board.toggle(row, col)
       remaining--
     }
+
+    return board
+  }
+
+  static generateSolvableWithDifficulty(
+    size: number,
+    tier: DifficultyTier,
+    seed?: number,
+  ): Board {
+    const rng = seed !== undefined ? createRng(seed) : Math.random
+    const movesCount = getMovesCount(size, tier, rng)
+
+    let board: Board
+    let attempts = 0
+    const maxAttempts = 10
+
+    do {
+      board = Board.generateSolvable(size, movesCount, seed !== undefined ? seed + attempts : undefined)
+      attempts++
+    } while (board.isWin() && attempts < maxAttempts)
 
     return board
   }

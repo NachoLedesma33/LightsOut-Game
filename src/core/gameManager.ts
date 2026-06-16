@@ -1,6 +1,5 @@
 import { Board } from './board'
-import type { Move, GameStatus, GameMode, GameSnapshot } from './types'
-import { getRandomMovesCount } from './constants'
+import type { Move, GameStatus, GameMode, GameSnapshot, DifficultyTier } from './types'
 
 export class GameManager {
   private _board: Board
@@ -12,10 +11,12 @@ export class GameManager {
   private _timerInterval: ReturnType<typeof setInterval> | null = null
   readonly size: number
   readonly mode: GameMode
+  readonly difficulty: DifficultyTier
 
-  constructor(size: number, mode: GameMode = 'classic') {
+  constructor(size: number, mode: GameMode = 'classic', difficulty?: DifficultyTier) {
     this.size = size
     this.mode = mode
+    this.difficulty = difficulty ?? 'medium'
     this._board = new Board(size)
     this._initialBoard = new Board(size)
   }
@@ -44,10 +45,9 @@ export class GameManager {
     return this._status === 'playing'
   }
 
-  init(movesCount?: number, seed?: number): void {
+  init(seed?: number): void {
     this.stopTimer()
-    const count = movesCount ?? getRandomMovesCount(this.size)
-    this._board = Board.generateSolvable(this.size, count, seed)
+    this._board = Board.generateSolvableWithDifficulty(this.size, this.difficulty, seed)
     this._initialBoard = this._board.clone()
     this._moves = []
     this._status = 'playing'
@@ -80,10 +80,6 @@ export class GameManager {
     this._elapsedTime = 0
     this._startTime = Date.now()
     this.startTimer()
-  }
-
-  newGame(movesCount?: number, seed?: number): void {
-    this.init(movesCount, seed)
   }
 
   undo(): boolean {

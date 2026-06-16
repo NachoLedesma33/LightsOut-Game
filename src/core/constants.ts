@@ -80,15 +80,4 @@ export const HINT_PENALTIES = {
   5: { score: 80, exp: 40 },
 } as const
 
-export function getDifficultyFactor(size: number): number {
-  if (size <= 4) return 1.5
-  if (size <= 6) return 1.2
-  if (size <= 8) return 1.0
-  return 0.8
-}
 
-export function getRandomMovesCount(size: number): number {
-  const base = size * size
-  const factor = getDifficultyFactor(size)
-  return Math.max(5, Math.floor(base * factor))
-}

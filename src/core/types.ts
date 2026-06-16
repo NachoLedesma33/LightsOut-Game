@@ -2,6 +2,8 @@ export type GameMode = 'classic' | 'expert' | 'infinite' | 'timed' | 'daily' | '
 
 export type GameStatus = 'idle' | 'playing' | 'won' | 'lost'
 
+export type DifficultyTier = 'easy' | 'medium' | 'hard' | 'expert'
+
 export interface Move {
   row: number
   col: number
@@ -17,6 +19,7 @@ export interface GameConfig {
   mode: GameMode
   size: number
   seed?: number
+  difficulty?: DifficultyTier
 }
 
 export interface GameSnapshot {

@@ -1,11 +1,12 @@
 import { create } from 'zustand'
 import { GameManager } from '../core/gameManager'
-import type { Move, GameStatus, GameMode } from '../core/types'
+import type { Move, GameStatus, GameMode, DifficultyTier } from '../core/types'
 
 interface GameState {
   grid: boolean[][]
   size: number
   mode: GameMode
+  difficulty: DifficultyTier
   status: GameStatus
   moveCount: number
   moves: Move[]
@@ -13,7 +14,7 @@ interface GameState {
 }
 
 interface GameActions {
-  initGame: (size: number, mode?: GameMode) => void
+  initGame: (size: number, difficulty?: DifficultyTier, mode?: GameMode) => void
   makeMove: (row: number, col: number) => void
   reset: () => void
   undo: () => void
@@ -56,17 +57,19 @@ export const useGameStore = create<GameState & GameActions>((set) => ({
   grid: [],
   size: 5,
   mode: 'classic',
+  difficulty: 'medium',
   status: 'idle',
   moveCount: 0,
   moves: [],
   elapsedTime: 0,
 
-  initGame: (size, mode = 'classic') => {
+  initGame: (size, difficulty = 'medium', mode = 'classic') => {
     if (manager) {
       manager.destroy()
     }
-    manager = new GameManager(size, mode)
+    manager = new GameManager(size, mode, difficulty)
     manager!.init()
+    set(() => ({ size, mode, difficulty }))
     syncFromManager(set)
     startTimer(set)
   },
@@ -100,6 +103,7 @@ export const useGameStore = create<GameState & GameActions>((set) => ({
       grid: [],
       size: 5,
       mode: 'classic',
+      difficulty: 'medium',
       status: 'idle',
       moveCount: 0,
       moves: [],
