@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ArrowLeft, RotateCcw, Lightbulb, Undo2, Sparkles, Infinity as InfinityIcon } from 'lucide-react'
@@ -33,25 +33,85 @@ const difficultyColors: Record<DifficultyTier, string> = {
   expert: 'text-[var(--color-error)]',
 }
 
+interface GridCellProps {
+  row: number
+  col: number
+  isOn: boolean
+  disabled: boolean
+  cellSize: number
+  hintLevel: number
+  isHinted: boolean
+  heatIntensity: number
+  hintIdx: number
+  onMove: (row: number, col: number) => void
+  tapSpring: Record<string, unknown>
+  staggerVariant: typeof cellVariants | undefined
+}
+
+const GridCell = memo(function GridCell({
+  row, col, isOn, disabled, cellSize, hintLevel, isHinted, heatIntensity, hintIdx, onMove, tapSpring, staggerVariant,
+}: GridCellProps) {
+  return (
+    <motion.button
+      onClick={() => onMove(row, col)}
+      disabled={disabled}
+      style={{ minHeight: `${cellSize}px` }}
+      className={cn(
+        'aspect-square cursor-pointer border-[var(--border-width)] border-[var(--color-border)] disabled:cursor-not-allowed relative',
+        isHinted && hintLevel >= 2 && 'animate-pulse-hint',
+      )}
+      variants={staggerVariant}
+      whileTap={disabled ? undefined : { scale: 0.88 }}
+      transition={tapSpring}
+    >
+      <div
+        className="w-full h-full transition-colors duration-150 relative"
+        style={{
+          backgroundColor: isOn ? 'var(--color-primary)' : 'var(--color-surface)',
+          boxShadow: isOn
+            ? 'var(--shadow-offset, 4px 4px) 0px 0px var(--color-shadow)'
+            : 'none',
+        }}
+      >
+        {hintLevel === 1 && heatIntensity > 0 && (
+          <div
+            className="absolute inset-0 transition-opacity duration-300"
+            style={{ backgroundColor: `rgba(34, 197, 94, ${heatIntensity * 0.4})` }}
+          />
+        )}
+        {isHinted && hintLevel === 2 && (
+          <div className="absolute inset-0 border-2 border-[var(--color-accent)] animate-pulse-hint" />
+        )}
+        {isHinted && hintLevel >= 3 && (
+          <div
+            className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-white"
+            style={{ backgroundColor: 'rgba(255, 107, 53, 0.7)' }}
+          >
+            {hintIdx + 1}
+          </div>
+        )}
+      </div>
+    </motion.button>
+  )
+})
+
 export function Infinite() {
   const navigate = useNavigate()
   const reduced = useReducedMotion()
 
-  const {
-    grid,
-    status,
-    moveCount,
-    elapsedTime,
-    difficulty: storeDifficulty,
-    hintLevel,
-    hintData,
-    initGame,
-    makeMove,
-    undo,
-    useHint,
-    reset,
-    size,
-  } = useGameStore()
+  const grid = useGameStore((s) => s.grid)
+  const status = useGameStore((s) => s.status)
+  const moveCount = useGameStore((s) => s.moveCount)
+  const elapsedTime = useGameStore((s) => s.elapsedTime)
+  const storeDifficulty = useGameStore((s) => s.difficulty)
+  const hintLevel = useGameStore((s) => s.hintLevel)
+  const hintData = useGameStore((s) => s.hintData)
+  const initGame = useGameStore((s) => s.initGame)
+  const makeMove = useGameStore((s) => s.makeMove)
+  const reset = useGameStore((s) => s.reset)
+  const undo = useGameStore((s) => s.undo)
+  const useHint = useGameStore((s) => s.useHint)
+  const size = useGameStore((s) => s.size)
 
   const { highScore, setHighScore, setBestStreak, incrementTotalBoards } = useInfiniteStore()
 
@@ -210,47 +270,21 @@ export function Infinite() {
             const heatIntensity = Math.max(0, heatVal / 5)
 
             return (
-              <motion.button
+              <GridCell
                 key={i}
-                onClick={() => makeMove(row, col)}
+                row={row}
+                col={col}
+                isOn={isOn}
                 disabled={disabled}
-                style={{ minHeight: `${cellSize}px` }}
-                className={cn(
-                  'aspect-square cursor-pointer border-[var(--border-width)] border-[var(--color-border)] disabled:cursor-not-allowed relative',
-                  isHinted && hintLevel >= 2 && 'animate-pulse-hint',
-                )}
-                variants={staggerEnabled ? cellVariants : undefined}
-                whileTap={disabled ? undefined : { scale: 0.88 }}
-                transition={tapSpring}
-              >
-                <div
-                  className="w-full h-full transition-colors duration-150 relative"
-                  style={{
-                    backgroundColor: isOn ? 'var(--color-primary)' : 'var(--color-surface)',
-                    boxShadow: isOn
-                      ? 'var(--shadow-offset, 4px 4px) 0px 0px var(--color-shadow)'
-                      : 'none',
-                  }}
-                >
-                  {hintLevel === 1 && heatVal > 0 && (
-                    <div
-                      className="absolute inset-0 transition-opacity duration-300"
-                      style={{ backgroundColor: `rgba(34, 197, 94, ${heatIntensity * 0.4})` }}
-                    />
-                  )}
-                  {isHinted && hintLevel === 2 && (
-                    <div className="absolute inset-0 border-2 border-[var(--color-accent)] animate-pulse-hint" />
-                  )}
-                  {isHinted && hintLevel >= 3 && (
-                    <div
-                      className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-white"
-                      style={{ backgroundColor: 'rgba(255, 107, 53, 0.7)' }}
-                    >
-                      {hintIdx + 1}
-                    </div>
-                  )}
-                </div>
-              </motion.button>
+                cellSize={cellSize}
+                hintLevel={hintLevel}
+                isHinted={isHinted}
+                heatIntensity={heatIntensity}
+                hintIdx={hintIdx}
+                onMove={makeMove}
+                tapSpring={tapSpring}
+                staggerVariant={staggerEnabled ? cellVariants : undefined}
+              />
             )
           })}
         </motion.div>

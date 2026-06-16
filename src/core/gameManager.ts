@@ -6,6 +6,7 @@ export class GameManager {
   private _board: Board
   private _initialBoard: Board
   private _moves: Move[] = []
+  private _boardHistory: Board[] = []
   private _status: GameStatus = 'idle'
   private _startTime: number | null = null
   private _elapsedTime: number = 0
@@ -54,6 +55,7 @@ export class GameManager {
     this._board = Board.generateSolvableWithDifficulty(this.size, this.difficulty, seed)
     this._initialBoard = this._board.clone()
     this._moves = []
+    this._boardHistory = []
     this._status = 'playing'
     this._elapsedTime = 0
     this._startTime = Date.now()
@@ -64,6 +66,7 @@ export class GameManager {
     if (this._status !== 'playing') return false
     if (row < 0 || row >= this.size || col < 0 || col >= this.size) return false
 
+    this._boardHistory.push(this._board.clone())
     this._board.toggle(row, col)
     this._moves.push({ row, col })
 
@@ -80,6 +83,7 @@ export class GameManager {
     this.stopTimer()
     this._board = this._initialBoard.clone()
     this._moves = []
+    this._boardHistory = []
     this._status = 'playing'
     this._elapsedTime = 0
     this._startTime = Date.now()
@@ -88,16 +92,10 @@ export class GameManager {
   }
 
   undo(): boolean {
-    if (this._status !== 'playing' || this._moves.length === 0) return false
+    if (this._status !== 'playing' || this._boardHistory.length === 0) return false
 
-    this._board = this._initialBoard.clone()
-    const remaining = this._moves.slice(0, -1)
-
-    for (const move of remaining) {
-      this._board.toggle(move.row, move.col)
-    }
-
-    this._moves = remaining
+    this._board = this._boardHistory.pop()!
+    this._moves.pop()
     return true
   }
 

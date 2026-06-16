@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, memo } from 'react'
 import { motion } from 'framer-motion'
 import { Trophy, Check, Lock } from 'lucide-react'
 import { PageTransition } from '../components/layout'
@@ -17,6 +17,7 @@ const CATEGORIES: { name: string; ids: string[] }[] = [
   { name: 'Dificultades', ids: ['facil', 'normal', 'dificil', 'experto_dif', 'todas_dificultades'] },
   { name: 'Pistas', ids: ['primera_pista', 'coleccionista'] },
   { name: 'Diario', ids: ['primer_diario', 'racha_diaria_7'] },
+  { name: 'Infinito', ids: ['primer_infinito', 'infinito_25', 'infinito_100', 'racha_infinita_10'] },
 ]
 
 const sectionVariants = {
@@ -71,7 +72,7 @@ function getProgress(a: AchievementDef, stats: StatisticsState): string | null {
   }
 }
 
-function AchievementCard({ def, unlocked, date, stats }: { def: AchievementDef; unlocked: boolean; date: string | null; stats: StatisticsState }) {
+const AchievementCard = memo(function AchievementCard({ def, unlocked, date, stats }: { def: AchievementDef; unlocked: boolean; date: string | null; stats: StatisticsState }) {
   const progress = !unlocked ? getProgress(def, stats) : null
 
   return (
@@ -99,7 +100,7 @@ function AchievementCard({ def, unlocked, date, stats }: { def: AchievementDef; 
       {unlocked && <Check size={16} className="shrink-0 text-[var(--color-success)]" />}
     </motion.div>
   )
-}
+})
 
 export function Achievements() {
   const unlocked = useAchievementStore((s) => s.unlocked)

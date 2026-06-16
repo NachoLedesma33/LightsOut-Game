@@ -4,12 +4,17 @@ import { getMovesCount } from './difficulty'
 export class Board {
   readonly size: number
   private grid: boolean[][]
+  private lightsOn: number = 0
 
   constructor(size: number, initial?: boolean[][]) {
     this.size = size
-    this.grid = initial
-      ? initial.map((row) => [...row])
-      : Array.from({ length: size }, () => Array(size).fill(false))
+    if (initial) {
+      this.grid = initial.map((row) => [...row])
+      this.lightsOn = initial.reduce((sum, row) => sum + row.filter(Boolean).length, 0)
+    } else {
+      this.grid = Array.from({ length: size }, () => Array(size).fill(false))
+      this.lightsOn = 0
+    }
   }
 
   get(row: number, col: number): boolean {
@@ -18,31 +23,36 @@ export class Board {
 
   set(row: number, col: number, value: boolean): void {
     if (this.isInBounds(row, col)) {
-      this.grid[row][col] = value
+      const prev = this.grid[row][col]
+      if (prev !== value) {
+        this.grid[row][col] = value
+        this.lightsOn += value ? 1 : -1
+      }
     }
   }
 
   toggle(row: number, col: number): void {
     if (!this.isInBounds(row, col)) return
-    this.grid[row][col] = !this.grid[row][col]
-    for (const [nr, nc] of this.neighbors(row, col)) {
-      this.grid[nr][nc] = !this.grid[nr][nc]
+
+    const flip = (r: number, c: number) => {
+      this.grid[r][c] = !this.grid[r][c]
+      this.lightsOn += this.grid[r][c] ? 1 : -1
     }
+
+    flip(row, col)
+    const n = this.size
+    if (row > 0) flip(row - 1, col)
+    if (row < n - 1) flip(row + 1, col)
+    if (col > 0) flip(row, col - 1)
+    if (col < n - 1) flip(row, col + 1)
   }
 
   isWin(): boolean {
-    for (let r = 0; r < this.size; r++) {
-      for (let c = 0; c < this.size; c++) {
-        if (this.grid[r][c]) return false
-      }
-    }
-    return true
+    return this.lightsOn === 0
   }
 
   clone(): Board {
-    const cloned = new Board(this.size)
-    cloned.grid = this.grid.map((row) => [...row])
-    return cloned
+    return new Board(this.size, this.grid)
   }
 
   reset(): void {
@@ -51,6 +61,7 @@ export class Board {
         this.grid[r][c] = false
       }
     }
+    this.lightsOn = 0
   }
 
   forEach(fn: (row: number, col: number, value: boolean) => void): void {
@@ -67,25 +78,13 @@ export class Board {
 
   equals(other: Board): boolean {
     if (this.size !== other.size) return false
+    if (this.lightsOn !== other.lightsOn) return false
     for (let r = 0; r < this.size; r++) {
       for (let c = 0; c < this.size; c++) {
         if (this.grid[r][c] !== other.grid[r][c]) return false
       }
     }
     return true
-  }
-
-  private neighbors(row: number, col: number): [number, number][] {
-    const dirs: [number, number][] = [[-1, 0], [1, 0], [0, -1], [0, 1]]
-    const result: [number, number][] = []
-    for (const [dr, dc] of dirs) {
-      const nr = row + dr
-      const nc = col + dc
-      if (this.isInBounds(nr, nc)) {
-        result.push([nr, nc])
-      }
-    }
-    return result
   }
 
   private isInBounds(row: number, col: number): boolean {

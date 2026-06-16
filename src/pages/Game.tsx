@@ -1,5 +1,5 @@
 import { useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Confetti from 'react-confetti'
 import { ArrowLeft, RotateCcw, Lightbulb, Undo2, Sparkles, Calendar } from 'lucide-react'
@@ -43,6 +43,91 @@ const cellVariants = {
   visible: { opacity: 1, scale: 1 },
 }
 
+interface GridCellProps {
+  row: number
+  col: number
+  isOn: boolean
+  disabled: boolean
+  cellSize: number
+  hintLevel: number
+  isHinted: boolean
+  heatIntensity: number
+  hintIdx: number
+  onMove: (row: number, col: number) => void
+  tapSpring: Record<string, unknown>
+  staggerVariant: typeof cellVariants | undefined
+  reduced: boolean
+}
+
+const GridCell = memo(function GridCell({
+  row, col, isOn, disabled, cellSize, hintLevel, isHinted, heatIntensity, hintIdx, onMove, tapSpring, staggerVariant,
+}: GridCellProps) {
+  return (
+    <motion.button
+      onClick={() => onMove(row, col)}
+      disabled={disabled}
+      style={{ minHeight: `${cellSize}px` }}
+      className={cn(
+        'aspect-square cursor-pointer border-[var(--border-width)] border-[var(--color-border)] disabled:cursor-not-allowed relative',
+        isHinted && hintLevel >= 2 && 'animate-pulse-hint',
+      )}
+      variants={staggerVariant}
+      whileTap={disabled ? undefined : { scale: 0.88 }}
+      transition={tapSpring}
+    >
+      <div
+        className="w-full h-full transition-colors duration-150 relative"
+        style={{
+          backgroundColor: isOn ? 'var(--color-primary)' : 'var(--color-surface)',
+          boxShadow: isOn
+            ? 'var(--shadow-offset, 4px 4px) 0px 0px var(--color-shadow)'
+            : 'none',
+        }}
+      >
+        {hintLevel === 1 && heatIntensity > 0 && (
+          <div
+            className="absolute inset-0 transition-opacity duration-300"
+            style={{ backgroundColor: `rgba(34, 197, 94, ${heatIntensity * 0.4})` }}
+          />
+        )}
+        {isHinted && hintLevel === 2 && (
+          <div className="absolute inset-0 border-2 border-[var(--color-accent)] animate-pulse-hint" />
+        )}
+        {isHinted && hintLevel >= 3 && (
+          <div
+            className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-white"
+            style={{ backgroundColor: 'rgba(255, 107, 53, 0.7)' }}
+          >
+            {hintIdx + 1}
+          </div>
+        )}
+      </div>
+    </motion.button>
+  )
+})
+
+function ConfettiOverlay({ reduced }: { reduced: boolean }) {
+  const [size, setSize] = useState(() => ({ w: window.innerWidth, h: window.innerHeight }))
+
+  useEffect(() => {
+    const onResize = () => setSize({ w: window.innerWidth, h: window.innerHeight })
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  if (reduced) return null
+
+  return (
+    <Confetti
+      width={size.w}
+      height={size.h}
+      numberOfPieces={200}
+      recycle={false}
+      colors={['#FFD600', '#FF6B35', '#22C55E', '#3B82F6', '#EF4444']}
+    />
+  )
+}
+
 export function Game() {
   const { size } = useParams()
   const [searchParams] = useSearchParams()
@@ -54,13 +139,18 @@ export function Game() {
   const gridSize = isDaily ? DAILY_SIZE : (Number(size) || 5)
   const dailySeed = useMemo(() => (isDaily ? getDailySeed() : undefined), [isDaily])
 
-  const [winSize, setWinSize] = useState(() => ({ w: window.innerWidth, h: window.innerHeight }))
-
-  useEffect(() => {
-    const onResize = () => setWinSize({ w: window.innerWidth, h: window.innerHeight })
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
-  }, [])
+  const grid = useGameStore((s) => s.grid)
+  const status = useGameStore((s) => s.status)
+  const moveCount = useGameStore((s) => s.moveCount)
+  const elapsedTime = useGameStore((s) => s.elapsedTime)
+  const storeDifficulty = useGameStore((s) => s.difficulty)
+  const hintLevel = useGameStore((s) => s.hintLevel)
+  const hintData = useGameStore((s) => s.hintData)
+  const initGame = useGameStore((s) => s.initGame)
+  const makeMove = useGameStore((s) => s.makeMove)
+  const reset = useGameStore((s) => s.reset)
+  const undo = useGameStore((s) => s.undo)
+  const useHint = useGameStore((s) => s.useHint)
 
   const urlDifficulty = searchParams.get('d') as DifficultyTier | null
 
@@ -72,21 +162,6 @@ export function Game() {
     return getDefaultDifficulty(gridSize)
   }, [urlDifficulty, gridSize, isDaily])
 
-  const {
-    grid,
-    status,
-    moveCount,
-    elapsedTime,
-    difficulty: storeDifficulty,
-    hintLevel,
-    hintData,
-    initGame,
-    makeMove,
-    reset,
-    undo,
-    useHint,
-  } = useGameStore()
-
   useEffect(() => {
     if (isDaily) {
       initGame(gridSize, DAILY_DIFFICULTY, 'daily', dailySeed)
@@ -96,7 +171,7 @@ export function Game() {
     return () => {
       useGameStore.getState().destroy()
     }
-  }, [gridSize, difficulty, isDaily, dailySeed])
+  }, [gridSize, difficulty, isDaily, dailySeed, initGame])
 
   const cellSize = Math.max(28, Math.min(56, Math.floor(380 / gridSize)))
   const gap = gridSize >= 8 ? 1 : gridSize >= 6 ? 2 : 3
@@ -187,62 +262,28 @@ export function Game() {
             const col = i % gridSize
             const isOn = grid[row]?.[col] ?? false
             const disabled = status !== 'playing'
-
             const isHinted = hintData?.moves.some((m) => m.row === row && m.col === col) ?? false
             const hintIdx = hintData ? hintData.moves.findIndex((m) => m.row === row && m.col === col) : -1
             const heatVal = hintData?.heatMap?.[row]?.[col] ?? 0
             const heatIntensity = Math.max(0, heatVal / 5)
 
             return (
-              <motion.button
+              <GridCell
                 key={i}
-                onClick={() => makeMove(row, col)}
+                row={row}
+                col={col}
+                isOn={isOn}
                 disabled={disabled}
-                style={{ minHeight: `${cellSize}px` }}
-                className={cn(
-                  'aspect-square cursor-pointer border-[var(--border-width)] border-[var(--color-border)] disabled:cursor-not-allowed relative',
-                  isHinted && hintLevel >= 2 && 'animate-pulse-hint',
-                )}
-                variants={staggerEnabled ? cellVariants : undefined}
-                whileTap={disabled ? undefined : { scale: 0.88 }}
-                transition={tapSpring}
-              >
-                <div
-                  className="w-full h-full transition-colors duration-150 relative"
-                  style={{
-                    backgroundColor: isOn
-                      ? 'var(--color-primary)'
-                      : 'var(--color-surface)',
-                    boxShadow: isOn
-                      ? 'var(--shadow-offset, 4px 4px) 0px 0px var(--color-shadow)'
-                      : 'none',
-                  }}
-                >
-                  {hintLevel === 1 && heatVal > 0 && (
-                    <div
-                      className="absolute inset-0 transition-opacity duration-300"
-                      style={{
-                        backgroundColor: `rgba(34, 197, 94, ${heatIntensity * 0.4})`,
-                      }}
-                    />
-                  )}
-                  {isHinted && hintLevel === 2 && (
-                    <div
-                      className="absolute inset-0 border-2 border-[var(--color-accent)] animate-pulse-hint"
-                    />
-                  )}
-                  {isHinted && hintLevel >= 3 && (
-                    <div
-                      className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-white"
-                      style={{
-                        backgroundColor: 'rgba(255, 107, 53, 0.7)',
-                      }}
-                    >
-                      {hintIdx + 1}
-                    </div>
-                  )}
-                </div>
-              </motion.button>
+                cellSize={cellSize}
+                hintLevel={hintLevel}
+                isHinted={isHinted}
+                heatIntensity={heatIntensity}
+                hintIdx={hintIdx}
+                onMove={makeMove}
+                tapSpring={tapSpring}
+                staggerVariant={staggerEnabled ? cellVariants : undefined}
+                reduced={reduced}
+              />
             )
           })}
         </motion.div>
@@ -300,15 +341,7 @@ export function Game() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-shadow)]/60"
           >
-            {!reduced && (
-              <Confetti
-                width={winSize.w}
-                height={winSize.h}
-                numberOfPieces={200}
-                recycle={false}
-                colors={['#FFD600', '#FF6B35', '#22C55E', '#3B82F6', '#EF4444']}
-              />
-            )}
+            <ConfettiOverlay reduced={reduced} />
             <motion.div
               initial={reduced ? { opacity: 0 } : { y: 40 }}
               animate={reduced ? { opacity: 1 } : { y: 0 }}
