@@ -40,7 +40,6 @@ export const GAME_MODES: ModeInfo[] = [
     title: 'Infinito',
     description: 'Generación procedural sin fin.',
     icon: 'Infinity',
-    comingSoon: true,
   },
   {
     id: 'timed',

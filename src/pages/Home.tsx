@@ -28,6 +28,10 @@ export function Home() {
       navigate('/daily')
       return
     }
+    if (modeId === 'infinite') {
+      navigate('/infinite')
+      return
+    }
     if (modeId === 'classic' || modeId === 'expert') {
       setSelectedMode(modeId)
       setSelectedSize(null)

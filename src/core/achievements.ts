@@ -1,5 +1,6 @@
 import type { StatisticsState, GameRecord } from '../stores/statisticsStore'
 import { useDailyStore } from '../stores/dailyStore'
+import { useInfiniteStore } from '../stores/infiniteStore'
 
 export interface AchievementDef {
   id: string
@@ -200,5 +201,33 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     description: 'Completa 7 Puzzles Diarios consecutivos',
     icon: '📆',
     condition: () => useDailyStore.getState().currentStreak >= 7 || useDailyStore.getState().bestStreak >= 7,
+  },
+  {
+    id: 'primer_infinito',
+    title: 'Primer infinito',
+    description: 'Completa tu primer tablero en modo Infinito',
+    icon: '♾️',
+    condition: (stats) => (stats.gamesByMode['infinite'] ?? 0) >= 1,
+  },
+  {
+    id: 'infinito_25',
+    title: 'Infinito 25',
+    description: 'Completa 25 tableros en modo Infinito',
+    icon: '♾️',
+    condition: (stats) => (stats.gamesByMode['infinite'] ?? 0) >= 25,
+  },
+  {
+    id: 'infinito_100',
+    title: 'Infinito 100',
+    description: 'Completa 100 tableros en modo Infinito',
+    icon: '♾️',
+    condition: (stats) => (stats.gamesByMode['infinite'] ?? 0) >= 100,
+  },
+  {
+    id: 'racha_infinita_10',
+    title: 'Racha infinita',
+    description: 'Alcanza una racha de 10 en modo Infinito',
+    icon: '🔥',
+    condition: () => useInfiniteStore.getState().bestStreak >= 10,
   },
 ]
