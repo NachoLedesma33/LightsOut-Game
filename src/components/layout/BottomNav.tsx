@@ -34,7 +34,7 @@ export function BottomNav() {
                 : 'text-[var(--color-text-muted)]',
             )}
           >
-            <Icon size={20} />
+            <Icon size={20} aria-hidden="true" />
             {label}
           </Link>
         ))}

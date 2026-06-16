@@ -14,7 +14,7 @@ export const Slider = forwardRef<
     <SliderPrimitive.Track className="relative h-3 w-full grow bg-[var(--color-border)]">
       <SliderPrimitive.Range className="absolute h-full bg-[var(--color-primary)]" />
     </SliderPrimitive.Track>
-    <SliderPrimitive.Thumb className="block h-6 w-6 bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-shadow)] cursor-pointer hover:bg-[var(--color-primary)] focus:outline-none transition-colors" />
+    <SliderPrimitive.Thumb className="block h-6 w-6 bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)] shadow-[3px_3px_0px_0px_var(--color-shadow)] cursor-pointer hover:bg-[var(--color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] transition-colors" />
   </SliderPrimitive.Root>
 ))
 Slider.displayName = 'Slider'

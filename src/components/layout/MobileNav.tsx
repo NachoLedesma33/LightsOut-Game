@@ -51,8 +51,9 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
               <button
                 onClick={onClose}
                 className="cursor-pointer bg-transparent border-none p-1 text-[var(--color-text)]"
+                aria-label="Cerrar menú"
               >
-                <X size={24} />
+                <X size={24} aria-hidden="true" />
               </button>
             </div>
             <div className="flex flex-col p-3 gap-1">
@@ -68,7 +69,7 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
                       : 'text-[var(--color-text)] hover:bg-[var(--color-bg)]',
                   )}
                 >
-                  <Icon size={20} />
+                  <Icon size={20} aria-hidden="true" />
                   {label}
                 </Link>
               ))}

@@ -14,7 +14,7 @@ export const Switch = forwardRef<
       'bg-[var(--color-surface)]',
       'shadow-[3px_3px_0px_0px_var(--color-shadow)]',
       'transition-all',
-      'focus:outline-none',
+      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]',
       'data-[state=checked]:bg-[var(--color-primary)]',
       className,
     )}

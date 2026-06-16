@@ -1,16 +1,14 @@
 import { useParams, useNavigate, useSearchParams, useLocation } from 'react-router-dom'
-import { useEffect, useMemo, useState, memo } from 'react'
+import { useEffect, useMemo, useState, memo, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Confetti from 'react-confetti'
 import { ArrowLeft, RotateCcw, Lightbulb, Undo2, Sparkles, Calendar } from 'lucide-react'
 import { Button } from '../components/ui'
 import { PageTransition } from '../components/layout'
 import { useGameStore } from '../stores/gameStore'
-import { formatTime } from '../lib/utils'
-import { getDifficultyLabel } from '../core/difficulty'
-import { getAvailableDifficulties, getDefaultDifficulty } from '../core/difficulty'
+import { formatTime, cn } from '../lib/utils'
+import { getDifficultyLabel, getAvailableDifficulties, getDefaultDifficulty } from '../core/difficulty'
 import type { DifficultyTier } from '../core/types'
-import { cn } from '../lib/utils'
 import { useReducedMotion } from '../hooks/useReducedMotion'
 import { DAILY_SIZE, DAILY_DIFFICULTY, getDailySeed, formatDailyDate } from '../core/dailyPuzzle'
 import { useDailyStore } from '../stores/dailyStore'
@@ -56,7 +54,6 @@ interface GridCellProps {
   onMove: (row: number, col: number) => void
   tapSpring: Record<string, unknown>
   staggerVariant: typeof cellVariants | undefined
-  reduced: boolean
 }
 
 const GridCell = memo(function GridCell({
@@ -66,6 +63,7 @@ const GridCell = memo(function GridCell({
     <motion.button
       onClick={() => onMove(row, col)}
       disabled={disabled}
+      aria-label={`Fila ${row + 1}, columna ${col + 1}${isOn ? ', encendida' : ', apagada'}`}
       style={{ minHeight: `${cellSize}px` }}
       className={cn(
         'aspect-square cursor-pointer border-[var(--border-width)] border-[var(--color-border)] disabled:cursor-not-allowed relative',
@@ -181,14 +179,23 @@ export function Game() {
   const staggerEnabled = !reduced
 
   const isTodayDone = useDailyStore((s) => s.isTodayCompleted())
+  const winDialogRef = useRef<HTMLDivElement>(null!)
+  const prevStatus = useRef(status)
+
+  useEffect(() => {
+    if (prevStatus.current !== 'won' && status === 'won') {
+      winDialogRef.current?.focus()
+    }
+    prevStatus.current = status
+  }, [status])
 
   return (
     <PageTransition>
       <div className="flex flex-col items-center gap-4 sm:gap-6">
         {/* Header row */}
         <div className="flex items-center justify-between w-full max-w-sm">
-          <Button variant="ghost" size="sm" onClick={() => navigate(isDaily ? '/' : '/')}>
-            <ArrowLeft size={16} />
+          <Button variant="ghost" size="sm" onClick={() => navigate('/')} aria-label="Volver al inicio">
+            <ArrowLeft size={16} aria-hidden="true" />
             <span className="hidden sm:inline">Volver</span>
           </Button>
 
@@ -215,9 +222,12 @@ export function Game() {
           )}
 
           <div className="flex gap-1">
-            <Button variant="secondary" size="sm">
+            <span
+              className="inline-flex items-center justify-center h-8 min-w-[2rem] px-2 text-xs font-bold border-[var(--border-width)] border-[var(--color-border)] bg-[var(--color-surface)] select-none"
+              aria-label={`${moveCount} movimientos`}
+            >
               {moveCount}
-            </Button>
+            </span>
           </div>
         </div>
 
@@ -282,7 +292,6 @@ export function Game() {
                 onMove={makeMove}
                 tapSpring={tapSpring}
                 staggerVariant={staggerEnabled ? cellVariants : undefined}
-                reduced={reduced}
               />
             )
           })}
@@ -295,8 +304,9 @@ export function Game() {
             size="sm"
             onClick={undo}
             disabled={status !== 'playing' || moveCount === 0}
+            aria-label="Deshacer"
           >
-            <Undo2 size={16} />
+            <Undo2 size={16} aria-hidden="true" />
             <span className="hidden sm:inline">Deshacer</span>
           </Button>
           <Button
@@ -305,16 +315,18 @@ export function Game() {
             onClick={useHint}
             disabled={status !== 'playing'}
             className="relative"
+            aria-label="Usar pista"
           >
-            <Lightbulb size={16} />
+            <Lightbulb size={16} aria-hidden="true" />
             <span className="hidden sm:inline">Pista</span>
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={reset}
+            aria-label="Reiniciar partida"
           >
-            <RotateCcw size={16} />
+            <RotateCcw size={16} aria-hidden="true" />
             <span className="hidden sm:inline">Reiniciar</span>
           </Button>
         </div>
@@ -336,10 +348,16 @@ export function Game() {
       <AnimatePresence>
         {status === 'won' && (
           <motion.div
+            ref={winDialogRef}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="win-title"
+            tabIndex={-1}
             className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-shadow)]/60"
+            onKeyDown={(e) => { if (e.key === 'Escape') navigate('/') }}
           >
             <ConfettiOverlay reduced={reduced} />
             <motion.div
@@ -359,9 +377,10 @@ export function Game() {
                 <Sparkles
                   size={64}
                   className="mx-auto mb-4 text-[var(--color-primary)]"
+                  aria-hidden="true"
                 />
               </motion.div>
-              <h2 className="text-2xl font-black mb-2">¡Ganaste!</h2>
+              <h2 id="win-title" className="text-2xl font-black mb-2">¡Ganaste!</h2>
               <p className="text-[var(--color-text-muted)] mb-2">
                 {isDaily ? 'Puzzle Diario' : `${gridSize}×${gridSize} · ${diffLabel}`}
               </p>

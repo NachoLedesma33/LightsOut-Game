@@ -2,7 +2,7 @@ import { useMemo, useEffect, useState } from 'react'
 import { animate } from 'framer-motion'
 import { BarChart3, Clock, Target, Zap, Trophy, Flame, Gamepad2, Trash2 } from 'lucide-react'
 import { PageTransition } from '../components/layout'
-import { Button } from '../components/ui'
+import { Button, Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter } from '../components/ui'
 import { useStatisticsStore } from '../stores/statisticsStore'
 import { formatTime } from '../lib/utils'
 import { getDifficultyLabel } from '../core/difficulty'
@@ -39,6 +39,7 @@ function AnimatedValue({ value, suffix = '' }: { value: number; suffix?: string 
 
 export function Statistics() {
   const stats = useStatisticsStore()
+  const [confirmOpen, setConfirmOpen] = useState(false)
   const winRate = stats.totalGames > 0 ? Math.round((stats.wonGames / stats.totalGames) * 100) : 0
 
   const bestRecords = useMemo(() => {
@@ -128,10 +129,28 @@ export function Statistics() {
         )}
 
         {stats.totalGames > 0 && (
-          <Button variant="ghost" size="sm" onClick={() => stats.clearStats()}>
-            <Trash2 size={14} />
-            <span>Limpiar estadísticas</span>
-          </Button>
+          <>
+            <Button variant="ghost" size="sm" onClick={() => setConfirmOpen(true)}>
+              <Trash2 size={14} />
+              <span>Limpiar estadísticas</span>
+            </Button>
+            <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+              <DialogContent>
+                <DialogTitle>¿Limpiar estadísticas?</DialogTitle>
+                <DialogDescription>
+                  Se borrarán todas las partidas, récords y rachas. Esta acción no se puede deshacer.
+                </DialogDescription>
+                <DialogFooter>
+                  <Button variant="ghost" size="sm" onClick={() => setConfirmOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button variant="primary" size="sm" onClick={() => { stats.clearStats(); setConfirmOpen(false) }}>
+                    Limpiar
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </>
         )}
 
         <div className="text-[10px] font-bold text-[var(--color-text-muted)] text-center">

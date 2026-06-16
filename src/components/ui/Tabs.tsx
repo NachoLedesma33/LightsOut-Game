@@ -34,7 +34,7 @@ export const TabsTrigger = forwardRef<
       'data-[state=active]:bg-[var(--color-primary)] data-[state=active]:text-[var(--color-secondary)]',
       'data-[state=inactive]:bg-[var(--color-surface)] data-[state=inactive]:text-[var(--color-text)]',
       'data-[state=inactive]:hover:bg-[var(--color-bg)]',
-      'focus:outline-none',
+      'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2',
       className,
     )}
     {...props}

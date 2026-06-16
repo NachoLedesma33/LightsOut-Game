@@ -30,7 +30,7 @@ export function TopBar() {
             to="/"
             className="flex items-center gap-2 no-underline font-black text-xl text-[var(--color-text)]"
           >
-            <Lightbulb size={28} className="text-[var(--color-primary)]" />
+            <Lightbulb size={28} className="text-[var(--color-primary)]" aria-hidden="true" />
             <span className="hidden xs:inline">Lights Out</span>
             <span className="xs:hidden">LO</span>
           </Link>
@@ -48,7 +48,7 @@ export function TopBar() {
                     : 'text-[var(--color-text)] hover:bg-[var(--color-bg)]',
                 )}
               >
-                <Icon size={16} />
+                <Icon size={16} aria-hidden="true" />
                 {label}
               </Link>
             ))}
@@ -62,7 +62,7 @@ export function TopBar() {
             )}
             aria-label="Abrir menú"
           >
-            <Menu size={24} />
+            <Menu size={24} aria-hidden="true" />
           </button>
         </div>
       </header>

@@ -165,7 +165,8 @@ export function Home() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.05, duration: 0.2 }}
                     onClick={() => !mode.comingSoon && handleModeSelect(mode.id)}
-                    disabled={mode.comingSoon}
+                    aria-disabled={mode.comingSoon ? 'true' : undefined}
+                    tabIndex={mode.comingSoon ? -1 : undefined}
                     className={cn(
                       'flex items-center gap-4 p-4 w-full text-left',
                       'bg-[var(--color-surface)]',
@@ -175,7 +176,7 @@ export function Home() {
                       'active:translate-x-[3px] active:translate-y-[3px]',
                       'transition-all duration-100',
                       'cursor-pointer',
-                      'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-x-0 disabled:hover:translate-y-0 disabled:hover:shadow-[var(--shadow-offset)_0px_0px_var(--color-shadow)]',
+                      'aria-disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:hover:translate-x-0 aria-disabled:hover:translate-y-0 aria-disabled:hover:shadow-[var(--shadow-offset)_0px_0px_var(--color-shadow)]',
                     )}
                   >
                     {Icon && (

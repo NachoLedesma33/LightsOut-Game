@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import Confetti from 'react-confetti'
 import { ArrowLeft, RotateCcw, Lightbulb, Undo2, Sparkles, Infinity as InfinityIcon } from 'lucide-react'
 import { Button } from '../components/ui'
 import { PageTransition } from '../components/layout'
@@ -55,6 +56,7 @@ const GridCell = memo(function GridCell({
     <motion.button
       onClick={() => onMove(row, col)}
       disabled={disabled}
+      aria-label={`Fila ${row + 1}, columna ${col + 1}${isOn ? ', encendida' : ', apagada'}`}
       style={{ minHeight: `${cellSize}px` }}
       className={cn(
         'aspect-square cursor-pointer border-[var(--border-width)] border-[var(--color-border)] disabled:cursor-not-allowed relative',
@@ -94,6 +96,28 @@ const GridCell = memo(function GridCell({
     </motion.button>
   )
 })
+
+function ConfettiOverlay({ reduced }: { reduced: boolean }) {
+  const [size, setSize] = useState(() => ({ w: window.innerWidth, h: window.innerHeight }))
+
+  useEffect(() => {
+    const onResize = () => setSize({ w: window.innerWidth, h: window.innerHeight })
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
+  if (reduced) return null
+
+  return (
+    <Confetti
+      width={size.w}
+      height={size.h}
+      numberOfPieces={200}
+      recycle={false}
+      colors={['#FFD600', '#FF6B35', '#22C55E', '#3B82F6', '#EF4444']}
+    />
+  )
+}
 
 export function Infinite() {
   const navigate = useNavigate()
@@ -160,18 +184,6 @@ export function Infinite() {
     return unsub
   }, [incrementTotalBoards, setHighScore, setBestStreak])
 
-  useEffect(() => {
-    if (showSummary) {
-      const t = setTimeout(() => {
-        const nextNum = boardNumberRef.current + 1
-        const config = getBoardConfig(nextNum)
-        setBoardNumber(nextNum)
-        setShowSummary(false)
-        initGame(config.size, config.difficulty, 'infinite', config.seed)
-      }, 3000)
-      return () => clearTimeout(t)
-    }
-  }, [showSummary, initGame])
 
   const handleNext = () => {
     const nextNum = boardNumber + 1
@@ -194,8 +206,8 @@ export function Infinite() {
       <div className="flex flex-col items-center gap-4 sm:gap-6">
         {/* Header */}
         <div className="flex items-center justify-between w-full max-w-sm">
-          <Button variant="ghost" size="sm" onClick={handleQuit}>
-            <ArrowLeft size={16} />
+          <Button variant="ghost" size="sm" onClick={handleQuit} aria-label="Salir del modo infinito">
+            <ArrowLeft size={16} aria-hidden="true" />
             <span className="hidden sm:inline">Salir</span>
           </Button>
 
@@ -241,9 +253,12 @@ export function Infinite() {
           <span className="font-bold font-mono text-base sm:text-lg tabular-nums">
             {formatTime(elapsedTime)}
           </span>
-          <Button variant="secondary" size="sm">
+          <span
+            className="inline-flex items-center justify-center h-8 min-w-[2rem] px-2 text-xs font-bold border-[var(--border-width)] border-[var(--color-border)] bg-[var(--color-surface)] select-none"
+            aria-label={`${moveCount} movimientos`}
+          >
             {moveCount}
-          </Button>
+          </span>
         </div>
 
         {/* Grid */}
@@ -296,8 +311,9 @@ export function Infinite() {
             size="sm"
             onClick={undo}
             disabled={status !== 'playing' || moveCount === 0}
+            aria-label="Deshacer"
           >
-            <Undo2 size={16} />
+            <Undo2 size={16} aria-hidden="true" />
             <span className="hidden sm:inline">Deshacer</span>
           </Button>
           <Button
@@ -306,16 +322,18 @@ export function Infinite() {
             onClick={useHint}
             disabled={status !== 'playing'}
             className="relative"
+            aria-label="Usar pista"
           >
-            <Lightbulb size={16} />
+            <Lightbulb size={16} aria-hidden="true" />
             <span className="hidden sm:inline">Pista</span>
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={reset}
+            aria-label="Reiniciar partida"
           >
-            <RotateCcw size={16} />
+            <RotateCcw size={16} aria-hidden="true" />
             <span className="hidden sm:inline">Reiniciar</span>
           </Button>
         </div>
@@ -335,49 +353,52 @@ export function Infinite() {
 
       {/* Win summary overlay */}
       <AnimatePresence>
-        {showSummary && status === 'won' && (
+      {showSummary && status === 'won' && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="inf-win-title"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-shadow)]/60"
+          onKeyDown={(e) => { if (e.key === 'Escape') setShowSummary(false) }}
+        >
+          <ConfettiOverlay reduced={reduced} />
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-shadow)]/60"
+            initial={reduced ? { opacity: 0 } : { y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={reduced ? { opacity: 0 } : { y: 40 }}
+            className="bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)] shadow-[var(--shadow-offset)_0px_0px_var(--color-shadow)] p-6 sm:p-8 text-center max-w-sm mx-4"
           >
             <motion.div
-              initial={reduced ? { opacity: 0 } : { y: 40 }}
-              animate={reduced ? { opacity: 1 } : { y: 0 }}
-              className="bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)] shadow-[var(--shadow-offset)_0px_0px_var(--color-shadow)] p-6 sm:p-8 text-center max-w-sm mx-4"
+              initial={reduced ? { opacity: 0 } : { rotate: -10, scale: 0 }}
+              animate={reduced ? { opacity: 1 } : { rotate: 0, scale: 1 }}
+              transition={reduced ? { duration: 0 } : { type: 'spring', damping: 12, stiffness: 200, delay: 0.15 }}
             >
-              <motion.div
-                initial={reduced ? { opacity: 0 } : { rotate: -10, scale: 0 }}
-                animate={reduced ? { opacity: 1 } : { rotate: 0, scale: 1 }}
-                transition={reduced ? { duration: 0 } : { type: 'spring', damping: 12, stiffness: 200, delay: 0.15 }}
-              >
-                <Sparkles size={48} className="mx-auto mb-3 text-[var(--color-primary)]" />
-              </motion.div>
-              <h2 className="text-2xl font-black mb-1">¡Completado!</h2>
-              <div className="text-sm font-bold text-[var(--color-text-muted)] mb-2">
-                {size}×{size} · {diffLabel}
-              </div>
-              <div className="text-sm text-[var(--color-text-muted)] mb-1">
-                {moveCount} movimientos {elapsedTime > 0 && `en ${formatTime(elapsedTime)}`}
-              </div>
-              <div className="text-3xl font-black text-[var(--color-accent)] my-4">
-                +{boardScore}
-              </div>
-              <div className="text-sm font-bold text-[var(--color-text-muted)] mb-6">
-                Total: {sessionScore}
-              </div>
-              <div className="flex gap-3 justify-center">
-                <Button variant="primary" onClick={handleNext}>
-                  Siguiente →
-                </Button>
-                <Button variant="ghost" onClick={handleQuit}>
-                  Finalizar
-                </Button>
-              </div>
+              <Sparkles size={48} className="mx-auto mb-3 text-[var(--color-primary)]" aria-hidden="true" />
             </motion.div>
+            <h2 id="inf-win-title" className="text-2xl font-black mb-1">¡Completado!</h2>
+            <div className="text-sm font-bold text-[var(--color-text-muted)] mb-2">
+              {size}×{size} · {diffLabel}
+            </div>
+            <div className="text-sm text-[var(--color-text-muted)] mb-1">
+              {moveCount} movimientos {elapsedTime > 0 && `en ${formatTime(elapsedTime)}`}
+            </div>
+            <div className="text-3xl font-black text-[var(--color-accent)] my-4">
+              +{boardScore}
+            </div>
+            <div className="text-sm font-bold text-[var(--color-text-muted)] mb-6">
+              Total: {sessionScore}
+            </div>
+            <div className="flex gap-3 justify-center">
+              <Button variant="primary" onClick={handleNext} autoFocus>
+                Siguiente →
+              </Button>
+              <Button variant="ghost" onClick={handleQuit}>
+                Finalizar
+              </Button>
+            </div>
           </motion.div>
-        )}
+        </div>
+      )}
       </AnimatePresence>
     </PageTransition>
   )
