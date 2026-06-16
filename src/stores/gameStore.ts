@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { GameManager } from '../core/gameManager'
-import type { Move, GameStatus, GameMode, DifficultyTier } from '../core/types'
+import type { Move, GameStatus, GameMode, DifficultyTier, HintLevel, HintData } from '../core/types'
 
 interface GameState {
   grid: boolean[][]
@@ -11,6 +11,8 @@ interface GameState {
   moveCount: number
   moves: Move[]
   elapsedTime: number
+  hintLevel: HintLevel
+  hintData: HintData | null
 }
 
 interface GameActions {
@@ -19,6 +21,7 @@ interface GameActions {
   reset: () => void
   undo: () => void
   destroy: () => void
+  useHint: () => void
 }
 
 let manager: GameManager | null = null
@@ -62,6 +65,8 @@ export const useGameStore = create<GameState & GameActions>((set) => ({
   moveCount: 0,
   moves: [],
   elapsedTime: 0,
+  hintLevel: 0,
+  hintData: null,
 
   initGame: (size, difficulty = 'medium', mode = 'classic') => {
     if (manager) {
@@ -69,7 +74,7 @@ export const useGameStore = create<GameState & GameActions>((set) => ({
     }
     manager = new GameManager(size, mode, difficulty)
     manager!.init()
-    set(() => ({ size, mode, difficulty }))
+    set(() => ({ size, mode, difficulty, hintLevel: 0, hintData: null }))
     syncFromManager(set)
     startTimer(set)
   },
@@ -77,7 +82,9 @@ export const useGameStore = create<GameState & GameActions>((set) => ({
   makeMove: (row, col) => {
     if (!manager || manager.status !== 'playing') return
     manager.makeMove(row, col)
+    manager.resetHints()
     syncFromManager(set)
+    set(() => ({ hintLevel: 0, hintData: null }))
   },
 
   reset: () => {
@@ -85,12 +92,21 @@ export const useGameStore = create<GameState & GameActions>((set) => ({
     manager.reset()
     syncFromManager(set)
     startTimer(set)
+    set(() => ({ hintLevel: 0, hintData: null }))
   },
 
   undo: () => {
     if (!manager) return
     manager.undo()
+    manager.resetHints()
     syncFromManager(set)
+    set(() => ({ hintLevel: 0, hintData: null }))
+  },
+
+  useHint: () => {
+    if (!manager || manager.status !== 'playing') return
+    const hintData = manager.advanceHint()
+    set(() => ({ hintLevel: manager.hintLevel, hintData }))
   },
 
   destroy: () => {
@@ -108,6 +124,8 @@ export const useGameStore = create<GameState & GameActions>((set) => ({
       moveCount: 0,
       moves: [],
       elapsedTime: 0,
+      hintLevel: 0,
+      hintData: null,
     })
   },
 }))

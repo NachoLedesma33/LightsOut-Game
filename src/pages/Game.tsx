@@ -46,10 +46,13 @@ export function Game() {
     moveCount,
     elapsedTime,
     difficulty: storeDifficulty,
+    hintLevel,
+    hintData,
     initGame,
     makeMove,
     reset,
     undo,
+    useHint,
   } = useGameStore()
 
   useEffect(() => {
@@ -115,16 +118,24 @@ export function Game() {
             const isOn = grid[row]?.[col] ?? false
             const disabled = status !== 'playing'
 
+            const isHinted = hintData?.moves.some((m) => m.row === row && m.col === col) ?? false
+            const hintIdx = hintData ? hintData.moves.findIndex((m) => m.row === row && m.col === col) : -1
+            const heatVal = hintData?.heatMap?.[row]?.[col] ?? 0
+            const heatIntensity = Math.max(0, heatVal / 5)
+
             return (
               <button
                 key={i}
                 onClick={() => makeMove(row, col)}
                 disabled={disabled}
                 style={{ minHeight: `${cellSize}px` }}
-                className="aspect-square cursor-pointer transition-all duration-100 border-[var(--border-width)] border-[var(--color-border)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_var(--color-shadow)] disabled:cursor-not-allowed disabled:active:translate-x-0 disabled:active:translate-y-0"
+                className={cn(
+                  'aspect-square cursor-pointer transition-all duration-100 border-[var(--border-width)] border-[var(--color-border)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_var(--color-shadow)] disabled:cursor-not-allowed disabled:active:translate-x-0 disabled:active:translate-y-0 relative',
+                  isHinted && hintLevel >= 2 && 'animate-pulse-hint',
+                )}
               >
                 <div
-                  className="w-full h-full transition-colors duration-150"
+                  className="w-full h-full transition-colors duration-150 relative"
                   style={{
                     backgroundColor: isOn
                       ? 'var(--color-primary)'
@@ -133,7 +144,31 @@ export function Game() {
                       ? 'var(--shadow-offset, 4px 4px) 0px 0px var(--color-shadow)'
                       : 'none',
                   }}
-                />
+                >
+                  {hintLevel === 1 && heatVal > 0 && (
+                    <div
+                      className="absolute inset-0 transition-opacity duration-300"
+                      style={{
+                        backgroundColor: `rgba(34, 197, 94, ${heatIntensity * 0.4})`,
+                      }}
+                    />
+                  )}
+                  {isHinted && hintLevel === 2 && (
+                    <div
+                      className="absolute inset-0 border-2 border-[var(--color-accent)] animate-pulse-hint"
+                    />
+                  )}
+                  {isHinted && hintLevel >= 3 && (
+                    <div
+                      className="absolute inset-0 flex items-center justify-center text-[10px] font-black text-white"
+                      style={{
+                        backgroundColor: 'rgba(255, 107, 53, 0.7)',
+                      }}
+                    >
+                      {hintIdx + 1}
+                    </div>
+                  )}
+                </div>
               </button>
             )
           })}
@@ -150,6 +185,16 @@ export function Game() {
             <span className="hidden sm:inline">Deshacer</span>
           </Button>
           <Button
+            variant="primary"
+            size="sm"
+            onClick={useHint}
+            disabled={status !== 'playing'}
+            className="relative"
+          >
+            <Lightbulb size={16} />
+            <span className="hidden sm:inline">Pista</span>
+          </Button>
+          <Button
             variant="ghost"
             size="sm"
             onClick={reset}
@@ -158,6 +203,16 @@ export function Game() {
             <span className="hidden sm:inline">Reiniciar</span>
           </Button>
         </div>
+
+        {hintData && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-xs font-bold text-[var(--color-text-muted)] text-center max-w-xs px-3 py-1.5 bg-[var(--color-surface)] border border-[var(--color-border)]"
+          >
+            {hintData.description}
+          </motion.div>
+        )}
       </div>
 
       <AnimatePresence>

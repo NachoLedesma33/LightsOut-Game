@@ -15,6 +15,17 @@ export interface GridSize {
   label: string
 }
 
+export type HintLevel = 0 | 1 | 2 | 3 | 4
+
+export interface HintData {
+  level: HintLevel
+  moves: Move[]
+  heatMap: number[][] | null
+  description: string
+  penaltyScore: number
+  penaltyExp: number
+}
+
 export interface GameConfig {
   mode: GameMode
   size: number

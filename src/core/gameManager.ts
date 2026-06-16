@@ -1,5 +1,6 @@
 import { Board } from './board'
-import type { Move, GameStatus, GameMode, GameSnapshot, DifficultyTier } from './types'
+import type { Move, GameStatus, GameMode, GameSnapshot, DifficultyTier, HintLevel, HintData } from './types'
+import { generateHint, solveGrid, computeHeatMap } from '../solver/hintEngine'
 
 export class GameManager {
   private _board: Board
@@ -9,6 +10,9 @@ export class GameManager {
   private _startTime: number | null = null
   private _elapsedTime: number = 0
   private _timerInterval: ReturnType<typeof setInterval> | null = null
+  private _hintLevel: HintLevel = 0
+  private _hintSolution: Move[] | null = null
+  private _hintHeatMap: number[][] | null = null
   readonly size: number
   readonly mode: GameMode
   readonly difficulty: DifficultyTier
@@ -80,6 +84,7 @@ export class GameManager {
     this._elapsedTime = 0
     this._startTime = Date.now()
     this.startTimer()
+    this.resetHints()
   }
 
   undo(): boolean {
@@ -94,6 +99,38 @@ export class GameManager {
 
     this._moves = remaining
     return true
+  }
+
+  get hintLevel(): HintLevel {
+    return this._hintLevel
+  }
+
+  advanceHint(): HintData {
+    const grid = this._board.toArray()
+
+    if (!this._hintSolution) {
+      this._hintSolution = solveGrid(grid)
+    }
+    if (!this._hintHeatMap) {
+      this._hintHeatMap = computeHeatMap(grid)
+    }
+
+    this._hintLevel = ((this._hintLevel + 1) % 5) as HintLevel
+    if (this._hintLevel === 0) this._hintLevel = 1
+
+    return generateHint(grid, this._hintLevel, this._hintSolution)
+  }
+
+  getHintData(): HintData | null {
+    if (this._hintLevel === 0) return null
+    const grid = this._board.toArray()
+    return generateHint(grid, this._hintLevel, this._hintSolution)
+  }
+
+  resetHints(): void {
+    this._hintLevel = 0
+    this._hintSolution = null
+    this._hintHeatMap = null
   }
 
   getSnapshot(): GameSnapshot {
