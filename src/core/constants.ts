@@ -54,7 +54,6 @@ export const GAME_MODES: ModeInfo[] = [
     title: 'Puzzle Diario',
     description: 'Un nuevo desafío cada día.',
     icon: 'Calendar',
-    comingSoon: true,
   },
   {
     id: 'challenge',

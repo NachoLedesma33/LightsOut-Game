@@ -1,4 +1,5 @@
 import type { StatisticsState, GameRecord } from '../stores/statisticsStore'
+import { useDailyStore } from '../stores/dailyStore'
 
 export interface AchievementDef {
   id: string
@@ -185,5 +186,19 @@ export const ACHIEVEMENTS: AchievementDef[] = [
     description: 'Usa los 4 niveles de pista en una misma partida',
     icon: '🔦',
     condition: (_stats, game) => game !== undefined && game.hintsUsed >= 4,
+  },
+  {
+    id: 'primer_diario',
+    title: 'Ritual diario',
+    description: 'Completa tu primer Puzzle Diario',
+    icon: '📅',
+    condition: (stats) => (stats.gamesByMode['daily'] ?? 0) > 0,
+  },
+  {
+    id: 'racha_diaria_7',
+    title: 'Racha semanal',
+    description: 'Completa 7 Puzzles Diarios consecutivos',
+    icon: '📆',
+    condition: () => useDailyStore.getState().currentStreak >= 7 || useDailyStore.getState().bestStreak >= 7,
   },
 ]

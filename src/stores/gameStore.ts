@@ -4,6 +4,7 @@ import type { Move, GameStatus, GameMode, DifficultyTier, HintLevel, HintData } 
 import type { GameRecord } from './statisticsStore'
 import { useStatisticsStore } from './statisticsStore'
 import { useAchievementStore } from './achievementStore'
+import { useDailyStore } from './dailyStore'
 
 interface GameState {
   grid: boolean[][]
@@ -20,7 +21,7 @@ interface GameState {
 }
 
 interface GameActions {
-  initGame: (size: number, difficulty?: DifficultyTier, mode?: GameMode) => void
+  initGame: (size: number, difficulty?: DifficultyTier, mode?: GameMode, seed?: number) => void
   makeMove: (row: number, col: number) => void
   reset: () => void
   undo: () => void
@@ -73,12 +74,12 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
   hintData: null,
   hintsUsed: 0,
 
-  initGame: (size, difficulty = 'medium', mode = 'classic') => {
+  initGame: (size, difficulty = 'medium', mode = 'classic', seed?: number) => {
     if (manager) {
       manager.destroy()
     }
     manager = new GameManager(size, mode, difficulty)
-    manager!.init()
+    manager!.init(seed)
     set(() => ({ size, mode, difficulty, hintLevel: 0, hintData: null, hintsUsed: 0 }))
     syncFromManager(set)
     startTimer(set)
@@ -106,6 +107,13 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
       }
       useStatisticsStore.getState().recordGame(gameRecord)
       useAchievementStore.getState().check(gameRecord)
+      if (state.mode === 'daily') {
+        useDailyStore.getState().recordCompletion({
+          time: state.elapsedTime,
+          moves: state.moveCount,
+          hintsUsed: state.hintsUsed,
+        })
+      }
     }
   },
 

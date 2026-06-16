@@ -19,6 +19,7 @@ export interface StatisticsState {
   wonGames: number
   gamesBySize: Record<string, number>
   gamesByDifficulty: Record<DifficultyTier, number>
+  gamesByMode: Record<GameMode, number>
   totalMoves: number
   totalTime: number
   totalHints: number
@@ -46,6 +47,7 @@ const initialState: StatisticsState = {
   wonGames: 0,
   gamesBySize: {},
   gamesByDifficulty: { easy: 0, medium: 0, hard: 0, expert: 0 },
+  gamesByMode: { classic: 0, expert: 0, infinite: 0, timed: 0, daily: 0, challenge: 0, chaos: 0 },
   totalMoves: 0,
   totalTime: 0,
   totalHints: 0,
@@ -83,6 +85,10 @@ export const useStatisticsStore = create<StatisticsStore>()(
             gamesByDifficulty: {
               ...state.gamesByDifficulty,
               [record.difficulty]: state.gamesByDifficulty[record.difficulty] + 1,
+            },
+            gamesByMode: {
+              ...state.gamesByMode,
+              [record.mode]: state.gamesByMode[record.mode] + 1,
             },
             totalMoves: state.totalMoves + record.moves,
             totalTime: state.totalTime + record.time,

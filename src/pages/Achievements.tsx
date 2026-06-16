@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { motion } from 'framer-motion'
 import { Trophy, Check, Lock } from 'lucide-react'
 import { PageTransition } from '../components/layout'
 import { ACHIEVEMENTS } from '../core/achievements'
@@ -6,6 +7,7 @@ import type { AchievementDef } from '../core/achievements'
 import { useAchievementStore } from '../stores/achievementStore'
 import { useStatisticsStore } from '../stores/statisticsStore'
 import type { StatisticsState } from '../stores/statisticsStore'
+import { useReducedMotion } from '../hooks/useReducedMotion'
 
 const CATEGORIES: { name: string; ids: string[] }[] = [
   { name: 'Progresión', ids: ['primera_victoria', 'diez_victorias', 'veinticinco_victorias', 'cincuenta_victorias', 'cien_victorias'] },
@@ -14,7 +16,20 @@ const CATEGORIES: { name: string; ids: string[] }[] = [
   { name: 'Tamaños', ids: ['mini_3', 'estandar_5', 'grande_7', 'experto_10', 'todos_tamanos'] },
   { name: 'Dificultades', ids: ['facil', 'normal', 'dificil', 'experto_dif', 'todas_dificultades'] },
   { name: 'Pistas', ids: ['primera_pista', 'coleccionista'] },
+  { name: 'Diario', ids: ['primer_diario', 'racha_diaria_7'] },
 ]
+
+const sectionVariants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.06, delayChildren: 0.05 },
+  },
+}
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0 },
+}
 
 function getProgress(a: AchievementDef, stats: StatisticsState): string | null {
   switch (a.id) {
@@ -60,7 +75,8 @@ function AchievementCard({ def, unlocked, date, stats }: { def: AchievementDef; 
   const progress = !unlocked ? getProgress(def, stats) : null
 
   return (
-    <div
+    <motion.div
+      variants={cardVariants}
       className={`flex items-center gap-3 p-3 bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)] ${!unlocked ? 'opacity-50' : ''}`}
     >
       <div
@@ -81,7 +97,7 @@ function AchievementCard({ def, unlocked, date, stats }: { def: AchievementDef; 
         )}
       </div>
       {unlocked && <Check size={16} className="shrink-0 text-[var(--color-success)]" />}
-    </div>
+    </motion.div>
   )
 }
 
@@ -91,6 +107,7 @@ export function Achievements() {
   const unlockedCount = Object.keys(unlocked).length
   const total = ACHIEVEMENTS.length
   const pct = Math.round((unlockedCount / total) * 100)
+  const reduced = useReducedMotion()
 
   const defMap = useMemo(() => {
     const m: Record<string, AchievementDef> = {}
@@ -126,7 +143,12 @@ export function Achievements() {
             if (catDefs.length === 0) return null
             const catUnlocked = catDefs.filter((d) => unlocked[d.id]).length
             return (
-              <section key={cat.name}>
+              <motion.section
+                key={cat.name}
+                variants={!reduced ? sectionVariants : undefined}
+                initial={!reduced ? 'hidden' : undefined}
+                animate={!reduced ? 'visible' : undefined}
+              >
                 <h2 className="text-xs font-black mb-2 text-[var(--color-text)] uppercase tracking-wider flex items-center gap-2">
                   <span>{cat.name}</span>
                   <span className="text-[var(--color-text-muted)]">({catUnlocked}/{catDefs.length})</span>
@@ -142,7 +164,7 @@ export function Achievements() {
                     />
                   ))}
                 </div>
-              </section>
+              </motion.section>
             )
           })}
         </div>

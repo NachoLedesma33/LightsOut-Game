@@ -18,6 +18,7 @@ export default function App() {
               <Route element={<RootLayout />}>
                 <Route path="/" element={<Home />} />
                 <Route path="/game/:size" element={<Game />} />
+                <Route path="/daily" element={<Game />} />
                 <Route path="/statistics" element={<Statistics />} />
                 <Route path="/achievements" element={<Achievements />} />
                 <Route path="/settings" element={<Settings />} />

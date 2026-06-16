@@ -24,6 +24,10 @@ export function Home() {
   const [selectedSize, setSelectedSize] = useState<number | null>(null)
 
   const handleModeSelect = (modeId: GameMode) => {
+    if (modeId === 'daily') {
+      navigate('/daily')
+      return
+    }
     if (modeId === 'classic' || modeId === 'expert') {
       setSelectedMode(modeId)
       setSelectedSize(null)
