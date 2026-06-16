@@ -1,16 +1,40 @@
-import { useMemo } from 'react'
+import { useMemo, useEffect, useState } from 'react'
+import { animate } from 'framer-motion'
 import { BarChart3, Clock, Target, Zap, Trophy, Flame, Gamepad2, Trash2 } from 'lucide-react'
 import { PageTransition } from '../components/layout'
 import { Button } from '../components/ui'
 import { useStatisticsStore } from '../stores/statisticsStore'
 import { formatTime } from '../lib/utils'
 import { getDifficultyLabel } from '../core/difficulty'
+import { useReducedMotion } from '../hooks/useReducedMotion'
 
 const difficultyColors: Record<string, string> = {
   easy: 'text-[var(--color-success)]',
   medium: 'text-[var(--color-primary)]',
   hard: 'text-[var(--color-accent)]',
   expert: 'text-[var(--color-error)]',
+}
+
+function AnimatedValue({ value, suffix = '' }: { value: number; suffix?: string }) {
+  const reduced = useReducedMotion()
+  const [display, setDisplay] = useState(value)
+
+  useEffect(() => {
+    if (reduced) return
+    const controls = animate(display, value, {
+      duration: 0.8,
+      ease: 'easeOut',
+      onUpdate: (latest) => setDisplay(Math.round(latest)),
+    })
+    return () => controls.stop()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [value, reduced])
+
+  if (reduced) {
+    return <>{value}{suffix}</>
+  }
+
+  return <>{display}{suffix}</>
 }
 
 export function Statistics() {
@@ -39,11 +63,11 @@ export function Statistics() {
         </div>
 
         <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full max-w-sm">
-          <StatCard icon={Gamepad2} value={String(stats.totalGames)} label="Partidas" color="var(--color-primary)" />
-          <StatCard icon={Trophy} value={String(stats.wonGames)} label="Ganadas" color="var(--color-success)" />
-          <StatCard icon={Target} value={winRate + '%'} label="Victorias" color="var(--color-accent)" />
-          <StatCard icon={Flame} value={String(stats.currentStreak)} label="Racha actual" color="var(--color-error)" />
-          <StatCard icon={Zap} value={String(stats.totalMoves)} label="Movimientos" color="var(--color-primary)" />
+          <StatCard icon={Gamepad2} value={<AnimatedValue value={stats.totalGames} />} label="Partidas" color="var(--color-primary)" />
+          <StatCard icon={Trophy} value={<AnimatedValue value={stats.wonGames} />} label="Ganadas" color="var(--color-success)" />
+          <StatCard icon={Target} value={<AnimatedValue value={winRate} suffix="%" />} label="Victorias" color="var(--color-accent)" />
+          <StatCard icon={Flame} value={<AnimatedValue value={stats.currentStreak} />} label="Racha actual" color="var(--color-error)" />
+          <StatCard icon={Zap} value={<AnimatedValue value={stats.totalMoves} />} label="Movimientos" color="var(--color-primary)" />
           <StatCard icon={Clock} value={formatTime(stats.totalTime)} label="Tiempo total" color="var(--color-accent)" />
         </div>
 
@@ -125,7 +149,7 @@ function StatCard({
   color,
 }: {
   icon: React.ElementType
-  value: string
+  value: string | React.ReactNode
   label: string
   color: string
 }) {

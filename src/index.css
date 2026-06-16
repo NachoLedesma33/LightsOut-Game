@@ -61,14 +61,29 @@ body {
 }
 
 @keyframes pulse-hint {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.4;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 
 .animate-pulse-hint {
   animation: pulse-hint 1.2s ease-in-out infinite;
+}
+
+@keyframes glow-on {
+  0% { box-shadow: 0 0 0 0 rgba(255, 214, 0, 0.5); }
+  50% { box-shadow: 0 0 10px 3px rgba(255, 214, 0, 0.25); }
+  100% { box-shadow: none; }
+}
+
+.animate-glow-on {
+  animation: glow-on 0.35s ease-out;
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.3s ease-out both;
 }
