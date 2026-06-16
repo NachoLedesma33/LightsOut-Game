@@ -14,7 +14,7 @@ export interface GameRecord {
   won: boolean
 }
 
-interface StatisticsState {
+export interface StatisticsState {
   totalGames: number
   wonGames: number
   gamesBySize: Record<string, number>

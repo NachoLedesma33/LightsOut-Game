@@ -1,7 +1,9 @@
 import { create } from 'zustand'
 import { GameManager } from '../core/gameManager'
 import type { Move, GameStatus, GameMode, DifficultyTier, HintLevel, HintData } from '../core/types'
+import type { GameRecord } from './statisticsStore'
 import { useStatisticsStore } from './statisticsStore'
+import { useAchievementStore } from './achievementStore'
 
 interface GameState {
   grid: boolean[][]
@@ -91,7 +93,7 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
 
     if (won) {
       const state = get()
-      useStatisticsStore.getState().recordGame({
+      const gameRecord: GameRecord = {
         id: crypto.randomUUID?.() ?? Math.random().toString(36).slice(2),
         date: new Date().toISOString(),
         size: state.size,
@@ -101,7 +103,9 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
         time: state.elapsedTime,
         hintsUsed: state.hintsUsed,
         won: true,
-      })
+      }
+      useStatisticsStore.getState().recordGame(gameRecord)
+      useAchievementStore.getState().check(gameRecord)
     }
   },
 
@@ -123,8 +127,21 @@ export const useGameStore = create<GameState & GameActions>((set, get) => ({
 
   useHint: () => {
     if (!manager || manager.status !== 'playing') return
-    const hintData = manager.advanceHint()
-    set((s) => ({ hintLevel: manager.hintLevel, hintData, hintsUsed: s.hintsUsed + 1 }))
+    const hintData = manager!.advanceHint()
+    const s = get()
+    const gameRecord: GameRecord = {
+      id: '',
+      date: new Date().toISOString(),
+      size: s.size,
+      mode: s.mode,
+      difficulty: s.difficulty,
+      moves: s.moveCount,
+      time: s.elapsedTime,
+      hintsUsed: s.hintsUsed + 1,
+      won: false,
+    }
+    useAchievementStore.getState().check(gameRecord)
+    set(() => ({ hintLevel: manager!.hintLevel, hintData, hintsUsed: s.hintsUsed + 1 }))
   },
 
   destroy: () => {
