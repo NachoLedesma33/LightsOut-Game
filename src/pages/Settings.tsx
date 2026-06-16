@@ -1,7 +1,17 @@
-import { Settings as SettingsIcon, Volume2, Monitor, Activity, Vibrate, Contrast } from 'lucide-react'
+import {
+  Settings as SettingsIcon,
+  Volume2,
+  Monitor,
+  Activity,
+  Vibrate,
+  Contrast,
+  Palette,
+  Info,
+} from 'lucide-react'
 import { Button, Switch } from '../components/ui'
 import { useSettingsStore } from '../stores/settingsStore'
 import { themes, themeIds } from '../theme/themes'
+import { PageTransition } from '../components/layout'
 
 export function SettingsPage() {
   const {
@@ -20,49 +30,76 @@ export function SettingsPage() {
   } = useSettingsStore()
 
   return (
-    <div className="flex flex-col items-center gap-8 pt-8">
-      <div className="flex flex-col items-center gap-2">
-        <SettingsIcon size={48} className="text-[var(--color-primary)]" />
-        <h1 className="text-3xl font-black text-[var(--color-text)] m-0">
-          Ajustes
-        </h1>
+    <PageTransition>
+      <div className="flex flex-col items-center gap-6 sm:gap-8 pt-4 sm:pt-8">
+        <div className="flex flex-col items-center gap-2">
+          <SettingsIcon size={48} className="text-[var(--color-primary)]" />
+          <h1 className="text-3xl font-black text-[var(--color-text)] m-0">Ajustes</h1>
+        </div>
+
+        <SettingsSection icon={Palette} title="Tema">
+          <div className="grid grid-cols-2 gap-2">
+            {themeIds.map((id) => {
+              const t = themes[id]
+              return (
+                <Button
+                  key={id}
+                  variant={id === currentTheme ? 'primary' : 'secondary'}
+                  size="sm"
+                  onClick={() => setTheme(id)}
+                >
+                  {t.name}
+                </Button>
+              )
+            })}
+          </div>
+        </SettingsSection>
+
+        <SettingsSection icon={Monitor} title="Preferencias">
+          <div className="flex flex-col gap-2">
+            <SettingRow icon={Volume2} label="Sonido" checked={soundEnabled} onToggle={toggleSound} />
+            <SettingRow icon={Monitor} label="Animaciones" checked={animationsEnabled} onToggle={toggleAnimations} />
+            <SettingRow icon={Activity} label="Movimiento reducido" checked={reducedMotion} onToggle={toggleReducedMotion} />
+            <SettingRow icon={Vibrate} label="Vibración" checked={vibrationEnabled} onToggle={toggleVibration} />
+            <SettingRow icon={Contrast} label="Alto contraste" checked={highContrast} onToggle={toggleHighContrast} />
+          </div>
+        </SettingsSection>
+
+        <SettingsSection icon={Info} title="Acerca de">
+          <div className="p-4 bg-[var(--color-bg)] border-[var(--border-width)] border-[var(--color-border)] text-sm">
+            <p className="font-bold mb-1">Lights Out Game</p>
+            <p className="text-[var(--color-text-muted)]">
+              Versión 0.1.0 · React 19 + TypeScript + Vite
+            </p>
+            <p className="text-[var(--color-text-muted)] mt-1">
+              Inspirado en el clásico juego electrónico de Tiger Electronics.
+            </p>
+          </div>
+        </SettingsSection>
       </div>
+    </PageTransition>
+  )
+}
 
-      <section className="w-full max-w-sm flex flex-col gap-3">
-        <h2 className="text-sm font-bold text-[var(--color-text-muted)] uppercase tracking-wider">
-          Tema
+function SettingsSection({
+  icon: Icon,
+  title,
+  children,
+}: {
+  icon: React.ComponentType<{ size: number; className?: string }>
+  title: string
+  children: React.ReactNode
+}) {
+  return (
+    <section className="w-full max-w-sm flex flex-col gap-3">
+      <div className="flex items-center gap-2">
+        <Icon size={16} className="text-[var(--color-accent)]" />
+        <h2 className="text-sm font-bold text-[var(--color-text-muted)] uppercase tracking-wider m-0">
+          {title}
         </h2>
-        <div className="grid grid-cols-2 gap-2">
-          {themeIds.map((id) => {
-            const t = themes[id]
-            return (
-              <Button
-                key={id}
-                variant={id === currentTheme ? 'primary' : 'secondary'}
-                size="sm"
-                onClick={() => setTheme(id)}
-              >
-                {t.name}
-              </Button>
-            )
-          })}
-        </div>
-      </section>
-
-      <section className="w-full max-w-sm flex flex-col gap-3">
-        <h2 className="text-sm font-bold text-[var(--color-text-muted)] uppercase tracking-wider">
-          Preferencias
-        </h2>
-
-        <div className="flex flex-col gap-2">
-          <SettingRow icon={Volume2} label="Sonido" checked={soundEnabled} onToggle={toggleSound} />
-          <SettingRow icon={Monitor} label="Animaciones" checked={animationsEnabled} onToggle={toggleAnimations} />
-          <SettingRow icon={Activity} label="Movimiento reducido" checked={reducedMotion} onToggle={toggleReducedMotion} />
-          <SettingRow icon={Vibrate} label="Vibración" checked={vibrationEnabled} onToggle={toggleVibration} />
-          <SettingRow icon={Contrast} label="Alto contraste" checked={highContrast} onToggle={toggleHighContrast} />
-        </div>
-      </section>
-    </div>
+      </div>
+      {children}
+    </section>
   )
 }
 

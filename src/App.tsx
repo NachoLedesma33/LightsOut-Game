@@ -4,7 +4,7 @@ import { TooltipProvider } from './components/ui'
 import { ThemeProvider } from './theme/ThemeProvider'
 import { Toaster } from 'sonner'
 import { RootLayout } from './components/layout'
-import { Home, Game, Statistics, Achievements, Settings } from './pages'
+import { Home, Game, Statistics, Achievements, Settings, NotFound } from './pages'
 
 const queryClient = new QueryClient()
 
@@ -21,6 +21,7 @@ export default function App() {
                 <Route path="/statistics" element={<Statistics />} />
                 <Route path="/achievements" element={<Achievements />} />
                 <Route path="/settings" element={<Settings />} />
+                <Route path="*" element={<NotFound />} />
               </Route>
             </Routes>
           </BrowserRouter>
