@@ -3,13 +3,41 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Lights Out Game — apaga todas las luces en cada puzzle. Modos clásico, diario e infinito." />
-    <meta name="theme-color" content="#FFFDF2" />
-    <title>Lights Out Game</title>
+    <link rel="alternate icon" type="image/png" sizes="32x32" href="/icons/icon-32.png" />
+    <link rel="alternate icon" type="image/png" sizes="16x16" href="/icons/icon-16.png" />
+    <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#FFFDF2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1A1A1A" media="(prefers-color-scheme: dark)" />
+    <meta name="description" content="Lights Out Game — apaga todas las luces en cada puzzle. Modos clásico, diario e infinito. Juega gratis en el navegador, sin instalación." />
+    <meta name="keywords" content="lights out, puzzle, juego, lógica, diario, infinito, gratis, navegador, PWA" />
+    <meta name="author" content="Lights Out Game" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="/" />
+    <meta property="og:title" content="Lights Out Game — Puzzle de lógica gratis" />
+    <meta property="og:description" content="Apaga todas las luces en cada puzzle. Modos clásico, diario e infinito. Juega gratis en el navegador, sin instalación." />
+    <meta property="og:image" content="/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="es_ES" />
+    <meta property="og:site_name" content="Lights Out Game" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="/" />
+    <meta name="twitter:title" content="Lights Out Game — Puzzle de lógica gratis" />
+    <meta name="twitter:description" content="Apaga todas las luces en cada puzzle. Modos clásico, diario e infinito. Juega gratis en el navegador." />
+    <meta name="twitter:image" content="/og-image.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" media="print" onload="this.media='all'" />
+    <title>Lights Out Game — Puzzle de lógica gratis</title>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <noscript>Necesitas habilitar JavaScript para jugar a Lights Out.</noscript>
   </body>
 </html>

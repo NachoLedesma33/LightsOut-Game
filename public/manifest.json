@@ -1,0 +1,90 @@
+{
+  "name": "Lights Out Game",
+  "short_name": "Lights Out",
+  "description": "Apaga todas las luces en cada puzzle. Modos clásico, diario e infinito. Juega gratis en el navegador.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFDF2",
+  "theme_color": "#FFFDF2",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "es",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "entertainment", "puzzle"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Jugar clásico",
+      "short_name": "Clásico",
+      "description": "Juega una partida clásica 5x5",
+      "url": "/?mode=classic&size=5",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Puzzle diario",
+      "short_name": "Diario",
+      "description": "Juega el puzzle del día",
+      "url": "/daily",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Modo infinito",
+      "short_name": "Infinito",
+      "description": "Juega partidas infinitas progresivas",
+      "url": "/infinite",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": []
+}

@@ -1,0 +1,6 @@
+# Lights Out Game - robots.txt
+User-agent: *
+Allow: /
+
+Sitemap: https://lightsoutgame.example.com/sitemap.xml
+Host: https://lightsoutgame.example.com
