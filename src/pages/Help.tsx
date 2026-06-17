@@ -125,7 +125,7 @@ function TutorialBoard() {
         })}
       </div>
 
-      <p className="text-sm text-center max-w-sm text-[var(--color-text)]">
+      <p className="text-sm text-center w-full text-[var(--color-text)]">
         {currentStep?.description}
       </p>
 
