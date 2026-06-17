@@ -16,7 +16,7 @@ export const DialogOverlay = forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      'fixed inset-0 z-50 bg-[var(--color-shadow)]/60',
+      'fixed inset-0 z-40 bg-[var(--color-shadow)]/60',
       className,
     )}
     {...props}
@@ -30,24 +30,23 @@ export const DialogContent = forwardRef<
 >(({ className, children, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <DialogPrimitive.Content
-        ref={ref}
-        className={cn(
-          'relative bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)]',
-          'shadow-[var(--shadow-offset)_0px_0px_var(--color-shadow)]',
-          'p-6 sm:p-8 w-full max-w-lg',
-          'max-h-[85vh] overflow-y-auto',
-          className,
-        )}
-        {...props}
-      >
-        {children}
-        <DialogPrimitive.Close className="absolute top-3 right-3 flex items-center justify-center p-2 cursor-pointer bg-transparent border-none text-[var(--color-text-muted)] hover:text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]" aria-label="Cerrar">
-          <X size={18} aria-hidden="true" />
-        </DialogPrimitive.Close>
-      </DialogPrimitive.Content>
-    </div>
+    <DialogPrimitive.Content
+      ref={ref}
+      className={cn(
+        'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2',
+        'bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)]',
+        'shadow-[var(--shadow-offset)_0px_0px_var(--color-shadow)]',
+        'p-6 sm:p-8 w-[90vw] max-w-lg min-w-[300px]',
+        'max-h-[85vh] overflow-y-auto',
+        className,
+      )}
+      {...props}
+    >
+      {children}
+      <DialogPrimitive.Close className="absolute top-3 right-3 flex items-center justify-center p-2 cursor-pointer bg-transparent border-none text-[var(--color-text-muted)] hover:text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]" aria-label="Cerrar">
+        <X size={18} aria-hidden="true" />
+      </DialogPrimitive.Close>
+    </DialogPrimitive.Content>
   </DialogPortal>
 ))
 DialogContent.displayName = 'DialogContent'
