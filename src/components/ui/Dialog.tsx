@@ -36,13 +36,15 @@ export const DialogContent = forwardRef<
         'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2',
         'bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)]',
         'shadow-[var(--shadow-offset)_0px_0px_var(--color-shadow)]',
-        'p-6 sm:p-8 w-[calc(100%-2rem)] max-w-md',
+        'p-6 sm:p-8 w-[calc(100%-2rem)] max-w-lg',
+        'max-h-[85vh] overflow-y-auto',
+        'box-border',
         className,
       )}
       {...props}
     >
       {children}
-      <DialogPrimitive.Close className="absolute top-4 right-4 flex items-center justify-center p-2 cursor-pointer bg-transparent border-none text-[var(--color-text-muted)] hover:text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]" aria-label="Cerrar">
+      <DialogPrimitive.Close className="absolute top-3 right-3 flex items-center justify-center p-2 cursor-pointer bg-transparent border-none text-[var(--color-text-muted)] hover:text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]" aria-label="Cerrar">
         <X size={18} aria-hidden="true" />
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
@@ -72,7 +74,7 @@ export const DialogDescription = forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn('text-sm text-[var(--color-text-muted)]', className)}
+    className={cn('text-sm text-[var(--color-text-muted)] mt-2', className)}
     {...props}
   />
 ))
