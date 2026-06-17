@@ -16,7 +16,7 @@ export const DialogOverlay = forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      'fixed inset-0 z-50 bg-[var(--color-shadow)]/50',
+      'fixed inset-0 z-50 bg-[var(--color-shadow)]/60',
       className,
     )}
     {...props}
@@ -36,13 +36,13 @@ export const DialogContent = forwardRef<
         'fixed left-1/2 top-1/2 z-50 -translate-x-1/2 -translate-y-1/2',
         'bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)]',
         'shadow-[var(--shadow-offset)_0px_0px_var(--color-shadow)]',
-        'p-6 w-full max-w-md',
+        'p-6 sm:p-8 w-[calc(100%-2rem)] max-w-md',
         className,
       )}
       {...props}
     >
       {children}
-      <DialogPrimitive.Close className="absolute top-4 right-4 flex items-center justify-center p-1 cursor-pointer bg-transparent border-none text-[var(--color-text-muted)] hover:text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]" aria-label="Cerrar">
+      <DialogPrimitive.Close className="absolute top-4 right-4 flex items-center justify-center p-2 cursor-pointer bg-transparent border-none text-[var(--color-text-muted)] hover:text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]" aria-label="Cerrar">
         <X size={18} aria-hidden="true" />
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
@@ -51,7 +51,7 @@ export const DialogContent = forwardRef<
 DialogContent.displayName = 'DialogContent'
 
 export const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn('mb-4', className)} {...props} />
+  <div className={cn('mb-6', className)} {...props} />
 )
 
 export const DialogTitle = forwardRef<
@@ -60,7 +60,7 @@ export const DialogTitle = forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Title
     ref={ref}
-    className={cn('text-xl font-bold', className)}
+    className={cn('text-xl font-black', className)}
     {...props}
   />
 ))
@@ -72,12 +72,12 @@ export const DialogDescription = forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={cn('text-[var(--color-text-muted)]', className)}
+    className={cn('text-sm text-[var(--color-text-muted)]', className)}
     {...props}
   />
 ))
 DialogDescription.displayName = 'DialogDescription'
 
 export const DialogFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn('mt-6 flex justify-end gap-3', className)} {...props} />
+  <div className={cn('mt-8 flex justify-center gap-4', className)} {...props} />
 )
