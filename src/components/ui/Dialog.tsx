@@ -30,13 +30,13 @@ export const DialogContent = forwardRef<
 >(({ className, children, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <DialogPrimitive.Content
         ref={ref}
         className={cn(
           'relative bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)]',
           'shadow-[var(--shadow-offset)_0px_0px_var(--color-shadow)]',
-          'p-6 sm:p-8 w-[calc(100%-2rem)] max-w-lg',
+          'p-6 sm:p-8 w-full max-w-lg',
           'max-h-[85vh] overflow-y-auto',
           className,
         )}
