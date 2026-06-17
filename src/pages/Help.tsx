@@ -1,10 +1,9 @@
 import { useState, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { BookOpen, Lightbulb, Grid3X3, Infinity, Zap, Award, Brain, ChevronRight } from 'lucide-react'
+import { BookOpen, Lightbulb, Grid3x3, Infinity as InfinityIcon, Zap, Award, Brain, ChevronRight } from 'lucide-react'
 import { PageTransition } from '../components/layout'
 import { cn } from '../lib/utils'
 import { Board } from '../core/board'
-import { useReducedMotion } from '../hooks/useReducedMotion'
 import { Button } from '../components/ui'
 
 type TutorialStep = {
@@ -42,7 +41,6 @@ const STARTING_GRID: boolean[][] = [
 ]
 
 function TutorialBoard() {
-  const reduced = useReducedMotion()
   const boardRef = useRef(new Board(3, STARTING_GRID))
   const [step, setStep] = useState(0)
   const [grid, setGrid] = useState(() => boardRef.current.toArray())
@@ -186,7 +184,7 @@ export function Help() {
           </p>
         </Section>
 
-        <Section title="Modos de juego" icon={Grid3X3}>
+        <Section title="Modos de juego" icon={Grid3x3}>
           <div className="flex flex-col gap-3">
             <div className="p-4 bg-[var(--color-bg)] border-[var(--border-width)] border-[var(--color-border)]">
               <h3 className="font-black text-sm flex items-center gap-2">
@@ -199,7 +197,7 @@ export function Help() {
             </div>
             <div className="p-4 bg-[var(--color-bg)] border-[var(--border-width)] border-[var(--color-border)]">
               <h3 className="font-black text-sm flex items-center gap-2">
-                <Infinity size={16} className="text-[var(--color-primary)]" /> Infinito
+                <InfinityIcon size={16} className="text-[var(--color-primary)]" /> Infinito
               </h3>
               <p className="text-xs text-[var(--color-text-muted)] mt-1">
                 Tableros generados proceduralmente sin límite. Cada vez que resuelves uno, avanzas al
@@ -260,7 +258,7 @@ export function Help() {
             <div className="p-4 bg-[var(--color-bg)] border-[var(--border-width)] border-[var(--color-border)]">
               <h3 className="font-black text-xs mb-2">Sistema de ecuaciones</h3>
               <p className="text-xs text-[var(--color-text-muted)]">
-                Para un tablero de n×n, cada celda es una variable xᵢⱼ ∈ {0, 1} que indica si debes
+                Para un tablero de n×n, cada celda es una variable xᵢⱼ ∈ {'{0, 1}'} que indica si debes
                 presionarla o no. La configuración inicial es el vector b, y la matriz M representa
                 cómo cada presión afecta al tablero. El sistema es:
               </p>

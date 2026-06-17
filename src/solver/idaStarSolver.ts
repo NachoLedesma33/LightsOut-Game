@@ -87,7 +87,8 @@ export function solveWithIdaStar(board: boolean[][]): SolverResult {
   while (bound < 500) {
     const result = search(0)
     if (result === -1 && foundPath) {
-      const moves: Move[] = foundPath.map((idx) => ({
+      const pathArr = foundPath as number[]
+      const moves: Move[] = pathArr.map((idx) => ({
         row: Math.floor(idx / size),
         col: idx % size,
       }))
