@@ -1,6 +1,6 @@
-import { useMemo, memo } from 'react'
+import { useMemo, memo, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Trophy, Check, Lock } from 'lucide-react'
+import { Trophy, Check, Lock, Trash2 } from 'lucide-react'
 import { PageTransition } from '../components/layout'
 import { ACHIEVEMENTS } from '../core/achievements'
 import type { AchievementDef } from '../core/achievements'
@@ -8,6 +8,7 @@ import { useAchievementStore } from '../stores/achievementStore'
 import { useStatisticsStore } from '../stores/statisticsStore'
 import type { StatisticsState } from '../stores/statisticsStore'
 import { useReducedMotion } from '../hooks/useReducedMotion'
+import { Button, Dialog, DialogContent, DialogTitle, DialogDescription, DialogFooter } from '../components/ui'
 
 const CATEGORIES: { name: string; ids: string[] }[] = [
   { name: 'Progresión', ids: ['primera_victoria', 'diez_victorias', 'veinticinco_victorias', 'cincuenta_victorias', 'cien_victorias'] },
@@ -104,11 +105,13 @@ const AchievementCard = memo(function AchievementCard({ def, unlocked, date, sta
 
 export function Achievements() {
   const unlocked = useAchievementStore((s) => s.unlocked)
+  const resetAchievements = useAchievementStore((s) => s.resetAchievements)
   const stats = useStatisticsStore()
   const unlockedCount = Object.keys(unlocked).length
   const total = ACHIEVEMENTS.length
   const pct = Math.round((unlockedCount / total) * 100)
   const reduced = useReducedMotion()
+  const [confirmOpen, setConfirmOpen] = useState(false)
 
   const defMap = useMemo(() => {
     const m: Record<string, AchievementDef> = {}
@@ -130,12 +133,34 @@ export function Achievements() {
         </div>
 
         {unlockedCount > 0 && (
-          <div className="w-full h-2 bg-[var(--color-bg)] border-[var(--border-width)] border-[var(--color-border)]">
-            <div
-              className="h-full bg-[var(--color-primary)] transition-all duration-500"
-              style={{ width: `${pct}%` }}
-            />
-          </div>
+          <>
+            <div className="w-full h-2 bg-[var(--color-bg)] border-[var(--border-width)] border-[var(--color-border)]">
+              <div
+                className="h-full bg-[var(--color-primary)] transition-all duration-500"
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+            <Button variant="ghost" size="sm" onClick={() => setConfirmOpen(true)}>
+              <Trash2 size={14} />
+              <span>Reiniciar logros</span>
+            </Button>
+            <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+              <DialogContent>
+                <DialogTitle>¿Reiniciar logros?</DialogTitle>
+                <DialogDescription>
+                  Se borrarán todos los logros desbloqueados. Esta acción no se puede deshacer.
+                </DialogDescription>
+                <DialogFooter>
+                  <Button variant="ghost" size="sm" onClick={() => setConfirmOpen(false)}>
+                    Cancelar
+                  </Button>
+                  <Button variant="primary" size="sm" onClick={() => { resetAchievements(); setConfirmOpen(false) }}>
+                    Reiniciar
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </>
         )}
 
         <div className="w-full flex flex-col gap-8">
