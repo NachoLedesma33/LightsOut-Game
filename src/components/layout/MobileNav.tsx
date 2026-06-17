@@ -1,13 +1,14 @@
 import { useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Lightbulb, BarChart3, Trophy, Settings } from 'lucide-react'
+import { X, Lightbulb, BarChart3, Trophy, Settings, BookOpen } from 'lucide-react'
 import { cn } from '../../lib/utils'
 
 const navItems = [
   { to: '/', label: 'Jugar', icon: Lightbulb },
   { to: '/statistics', label: 'Estadísticas', icon: BarChart3 },
   { to: '/achievements', label: 'Logros', icon: Trophy },
+  { to: '/how-to-play', label: 'Cómo jugar', icon: BookOpen },
   { to: '/settings', label: 'Ajustes', icon: Settings },
 ]
 

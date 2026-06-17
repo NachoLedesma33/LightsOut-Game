@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { cn } from '../../lib/utils'
-import { Lightbulb, BarChart3, Trophy, Settings, Menu } from 'lucide-react'
+import { Lightbulb, BarChart3, Trophy, Settings, BookOpen, Menu } from 'lucide-react'
 import { MobileNav } from './MobileNav'
 
 const navItems = [
   { to: '/', label: 'Jugar', icon: Lightbulb },
   { to: '/statistics', label: 'Estadísticas', icon: BarChart3 },
   { to: '/achievements', label: 'Logros', icon: Trophy },
+  { to: '/how-to-play', label: 'Cómo jugar', icon: BookOpen },
   { to: '/settings', label: 'Ajustes', icon: Settings },
 ]
 
