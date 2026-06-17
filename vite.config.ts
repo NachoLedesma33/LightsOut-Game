@@ -14,12 +14,12 @@ export default defineConfig(({ mode }) => ({
     },
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-slider', '@radix-ui/react-switch', '@radix-ui/react-tabs', '@radix-ui/react-tooltip'],
-          motion: ['framer-motion'],
-          utils: ['zustand', 'clsx', 'tailwind-merge', 'sonner'],
-        } as Record<string, string[]>,
+        manualChunks(id: string) {
+          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react-router')) return 'vendor'
+          if (id.includes('node_modules/@radix-ui')) return 'ui'
+          if (id.includes('node_modules/framer-motion')) return 'motion'
+          if (id.includes('node_modules/zustand') || id.includes('node_modules/clsx') || id.includes('node_modules/tailwind-merge') || id.includes('node_modules/sonner')) return 'utils'
+        },
         chunkFileNames: 'assets/js/[name]-[hash].js',
         entryFileNames: 'assets/js/[name]-[hash].js',
         assetFileNames: (assetInfo) => {

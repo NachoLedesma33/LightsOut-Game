@@ -50,7 +50,7 @@ export function MobileNav({ open, onClose }: MobileNavProps) {
               <span className="font-black text-lg">Menú</span>
               <button
                 onClick={onClose}
-                className="cursor-pointer bg-transparent border-none p-1 text-[var(--color-text)]"
+                className="flex items-center justify-center p-1 cursor-pointer bg-transparent border-none text-[var(--color-text)] hover:bg-[var(--color-bg)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]"
                 aria-label="Cerrar menú"
               >
                 <X size={24} aria-hidden="true" />

@@ -31,14 +31,14 @@ export function SettingsPage() {
 
   return (
     <PageTransition>
-      <div className="flex flex-col items-center gap-6 sm:gap-8 pt-4 sm:pt-8">
-        <div className="flex flex-col items-center gap-2">
+      <div className="flex flex-col gap-10 pt-6 sm:pt-10 pb-12">
+        <div className="flex flex-col gap-2">
           <SettingsIcon size={48} className="text-[var(--color-primary)]" />
           <h1 className="text-3xl font-black text-[var(--color-text)] m-0">Ajustes</h1>
         </div>
 
         <SettingsSection icon={Palette} title="Tema">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="flex flex-row flex-wrap gap-3">
             {themeIds.map((id) => {
               const t = themes[id]
               return (
@@ -56,7 +56,7 @@ export function SettingsPage() {
         </SettingsSection>
 
         <SettingsSection icon={Monitor} title="Preferencias">
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-4">
             <SettingRow icon={Volume2} label="Sonido" checked={soundEnabled} onToggle={toggleSound} />
             <SettingRow icon={Monitor} label="Animaciones" checked={animationsEnabled} onToggle={toggleAnimations} />
             <SettingRow icon={Activity} label="Movimiento reducido" checked={reducedMotion} onToggle={toggleReducedMotion} />
@@ -91,7 +91,7 @@ function SettingsSection({
   children: React.ReactNode
 }) {
   return (
-    <section className="w-full max-w-sm flex flex-col gap-3">
+    <section className="w-full flex flex-col gap-4">
       <div className="flex items-center gap-2">
         <Icon size={16} className="text-[var(--color-accent)]" />
         <h2 className="text-sm font-bold text-[var(--color-text-muted)] uppercase tracking-wider m-0">
@@ -115,7 +115,7 @@ function SettingRow({
   onToggle: () => void
 }) {
   return (
-    <div className="flex items-center justify-between p-3 bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)]">
+    <div className="flex items-center justify-between p-4 sm:p-5 bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)]">
       <div className="flex items-center gap-3">
         <Icon size={18} className="text-[var(--color-text-muted)]" />
         <span className="text-sm font-bold">{label}</span>

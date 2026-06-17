@@ -203,9 +203,9 @@ export function Infinite() {
 
   return (
     <PageTransition>
-      <div className="flex flex-col items-center gap-4 sm:gap-6">
+      <div className="flex flex-col gap-6 sm:gap-8 pt-4">
         {/* Header */}
-        <div className="flex items-center justify-between w-full max-w-sm">
+        <div className="flex items-center justify-between w-full">
           <Button variant="ghost" size="sm" onClick={handleQuit} aria-label="Salir del modo infinito">
             <ArrowLeft size={16} aria-hidden="true" />
             <span className="hidden sm:inline">Salir</span>
@@ -224,7 +224,7 @@ export function Infinite() {
         </div>
 
         {/* Score row */}
-        <div className="flex items-center justify-between w-full max-w-sm">
+        <div className="flex items-center justify-between w-full">
           <div className="flex flex-col items-start">
             <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase">Puntaje</span>
             <span className="text-lg font-black tabular-nums">{sessionScore}</span>
@@ -240,9 +240,9 @@ export function Infinite() {
         </div>
 
         {/* Board info */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center justify-center flex-wrap gap-x-3 gap-y-2 sm:gap-3 max-w-full">
           <span className={cn(
-            'text-[10px] sm:text-xs font-bold px-1.5 py-0.5 border-[var(--border-width)] uppercase',
+            'text-[10px] sm:text-xs font-bold px-2 py-1 border-[var(--border-width)] uppercase',
             difficultyColors[storeDifficulty],
           )}>
             {diffLabel}
@@ -267,7 +267,7 @@ export function Infinite() {
           variants={gridVariants}
           initial="hidden"
           animate="visible"
-          className="grid"
+          className="grid self-center"
           style={{
             gridTemplateColumns: `repeat(${size}, 1fr)`,
             gap: `${gap}px`,
@@ -305,35 +305,37 @@ export function Infinite() {
         </motion.div>
 
         {/* Controls */}
-        <div className="flex gap-3">
+        <div className="flex gap-5 sm:gap-4 self-center">
           <Button
             variant="secondary"
-            size="sm"
+            size="md"
+            className="px-5 py-3 sm:px-4 sm:py-2 sm:text-sm"
             onClick={undo}
             disabled={status !== 'playing' || moveCount === 0}
             aria-label="Deshacer"
           >
-            <Undo2 size={16} aria-hidden="true" />
+            <Undo2 size={18} aria-hidden="true" />
             <span className="hidden sm:inline">Deshacer</span>
           </Button>
           <Button
             variant="primary"
-            size="sm"
+            size="md"
+            className="relative px-5 py-3 sm:px-4 sm:py-2 sm:text-sm"
             onClick={useHint}
             disabled={status !== 'playing'}
-            className="relative"
             aria-label="Usar pista"
           >
-            <Lightbulb size={16} aria-hidden="true" />
+            <Lightbulb size={18} aria-hidden="true" />
             <span className="hidden sm:inline">Pista</span>
           </Button>
           <Button
             variant="ghost"
-            size="sm"
+            size="md"
+            className="px-5 py-3 sm:px-4 sm:py-2 sm:text-sm"
             onClick={reset}
             aria-label="Reiniciar partida"
           >
-            <RotateCcw size={16} aria-hidden="true" />
+            <RotateCcw size={18} aria-hidden="true" />
             <span className="hidden sm:inline">Reiniciar</span>
           </Button>
         </div>
@@ -366,7 +368,7 @@ export function Infinite() {
             initial={reduced ? { opacity: 0 } : { y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             exit={reduced ? { opacity: 0 } : { y: 40 }}
-            className="bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)] shadow-[var(--shadow-offset)_0px_0px_var(--color-shadow)] p-6 sm:p-8 text-center max-w-sm mx-4"
+            className="bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)] shadow-[var(--shadow-offset)_0px_0px_var(--color-shadow)] p-6 sm:p-8 text-center w-[calc(100%-2rem)] max-w-sm"
           >
             <motion.div
               initial={reduced ? { opacity: 0 } : { rotate: -10, scale: 0 }}
@@ -388,11 +390,11 @@ export function Infinite() {
             <div className="text-sm font-bold text-[var(--color-text-muted)] mb-6">
               Total: {sessionScore}
             </div>
-            <div className="flex gap-3 justify-center">
-              <Button variant="primary" onClick={handleNext} autoFocus>
+            <div className="flex gap-4 justify-center">
+              <Button variant="primary" size="lg" onClick={handleNext} autoFocus>
                 Siguiente →
               </Button>
-              <Button variant="ghost" onClick={handleQuit}>
+              <Button variant="ghost" size="lg" onClick={handleQuit}>
                 Finalizar
               </Button>
             </div>

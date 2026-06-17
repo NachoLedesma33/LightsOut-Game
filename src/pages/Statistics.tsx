@@ -55,15 +55,15 @@ export function Statistics() {
 
   return (
     <PageTransition>
-      <div className="flex flex-col items-center gap-6 sm:gap-8 pt-4 sm:pt-8 pb-8">
-        <div className="flex flex-col items-center gap-2">
+      <div className="flex flex-col gap-10 pt-6 sm:pt-10 pb-12">
+        <div className="flex flex-col gap-2">
           <BarChart3 size={48} className="text-[var(--color-primary)]" />
           <h1 className="text-3xl font-black text-[var(--color-text)] m-0">
             Estadísticas
           </h1>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full max-w-sm">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-5 w-full">
           <StatCard icon={Gamepad2} value={<AnimatedValue value={stats.totalGames} />} label="Partidas" color="var(--color-primary)" />
           <StatCard icon={Trophy} value={<AnimatedValue value={stats.wonGames} />} label="Ganadas" color="var(--color-success)" />
           <StatCard icon={Target} value={<AnimatedValue value={winRate} suffix="%" />} label="Victorias" color="var(--color-accent)" />
@@ -73,17 +73,17 @@ export function Statistics() {
         </div>
 
         {bestRecords.length > 0 && (
-          <section className="w-full max-w-sm">
-            <h2 className="text-lg font-black mb-3 text-[var(--color-text)] uppercase tracking-wider">
+          <section className="w-full">
+            <h2 className="text-lg font-black mb-4 text-[var(--color-text)] uppercase tracking-wider">
               Mejores registros
             </h2>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-4">
               {bestRecords.map(({ key, time, moves }) => {
                 const [size, difficulty] = key.split('_')
                 return (
                   <div
                     key={key}
-                    className="flex items-center justify-between px-3 py-2 bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)] text-xs font-bold"
+                    className="flex items-center justify-between px-4 py-3 sm:px-5 sm:py-4 bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)] text-sm font-bold"
                   >
                     <span className="font-mono">{size}</span>
                     <span className={difficultyColors[difficulty] ?? ''}>
@@ -103,15 +103,15 @@ export function Statistics() {
         )}
 
         {recentGames.length > 0 && (
-          <section className="w-full max-w-sm">
-            <h2 className="text-lg font-black mb-3 text-[var(--color-text)] uppercase tracking-wider">
+          <section className="w-full">
+            <h2 className="text-lg font-black mb-4 text-[var(--color-text)] uppercase tracking-wider">
               Partidas recientes
             </h2>
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-4">
               {recentGames.map((g) => (
                 <div
                   key={g.id}
-                  className="flex items-center justify-between px-3 py-2 bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)] text-xs font-bold"
+                  className="flex items-center justify-between px-4 py-3 sm:px-5 sm:py-4 bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)] text-sm font-bold"
                 >
                   <span className="font-mono">{g.size}x{g.size}</span>
                   <span className={difficultyColors[g.difficulty]}>
@@ -173,7 +173,7 @@ function StatCard({
   color: string
 }) {
   return (
-    <div className="flex flex-col items-center gap-2 p-4 sm:p-5 bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)] shadow-[var(--shadow-offset)_0px_0px_var(--color-shadow)]">
+    <div className="flex flex-col items-center gap-3 p-5 sm:p-6 bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)] shadow-[var(--shadow-offset)_0px_0px_var(--color-shadow)]">
       <Icon size={20} style={{ color }} />
       <span className="text-2xl sm:text-3xl font-black font-mono tabular-nums">{value}</span>
       <span className="text-[10px] sm:text-xs font-bold text-[var(--color-text-muted)] text-center uppercase tracking-wider">

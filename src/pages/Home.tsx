@@ -52,12 +52,12 @@ export function Home() {
 
   return (
     <PageTransition>
-      <div className="flex flex-col items-center gap-6 pt-4 sm:pt-8">
+      <div className="flex flex-col gap-10 pt-6 sm:pt-10 pb-12">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.4, ease: 'easeOut' }}
-          className="flex flex-col items-center gap-2"
+          className="flex flex-col gap-2"
         >
           <Lightbulb
             size={72}
@@ -78,9 +78,9 @@ export function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="w-full max-w-md"
+              className="w-full"
             >
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-6">
                 <h2 className="text-sm font-bold text-[var(--color-text-muted)] uppercase tracking-wider">
                   {selectedSize}×{selectedSize} — dificultad
                 </h2>
@@ -88,7 +88,7 @@ export function Home() {
                   Volver
                 </Button>
               </div>
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col gap-5">
                 {getAvailableDifficulties(selectedSize).map((tier) => {
                   const config = DIFFICULTY_TIERS.find((d) => d.tier === tier)!
                   return (
@@ -97,7 +97,7 @@ export function Home() {
                       whileTap={{ scale: 0.98 }}
                       onClick={() => handleDifficultySelect(tier)}
                       className={cn(
-                        'flex items-center justify-between p-4 w-full text-left',
+                        'flex items-center justify-between p-5 sm:p-6 w-full text-left',
                         'bg-[var(--color-surface)]',
                         'border-[var(--border-width)] border-[var(--color-border)]',
                         'shadow-[var(--shadow-offset)_0px_0px_var(--color-shadow)]',
@@ -107,8 +107,8 @@ export function Home() {
                       )}
                     >
                       <div>
-                        <div className="font-bold text-sm">{config.label}</div>
-                        <div className="text-xs text-[var(--color-text-muted)]">{config.description}</div>
+                        <div className="font-bold text-lg">{config.label}</div>
+                        <div className="text-sm sm:text-base text-[var(--color-text-muted)]">{config.description}</div>
                       </div>
                       <DifficultyBadge tier={tier} />
                     </motion.button>
@@ -122,9 +122,9 @@ export function Home() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="w-full max-w-md"
+              className="w-full"
             >
-              <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center justify-between mb-6">
                 <h2 className="text-sm font-bold text-[var(--color-text-muted)] uppercase tracking-wider">
                   {selectedMode === 'expert' ? 'Experto' : 'Clásico'} — elige tamaño
                 </h2>
@@ -133,14 +133,15 @@ export function Home() {
                 </Button>
               </div>
               <div className={cn(
-                'grid gap-2',
-                selectedMode === 'expert' ? 'grid-cols-3' : 'grid-cols-5',
+                'grid gap-4',
+                selectedMode === 'expert' ? 'grid-cols-3' : 'grid-cols-2 sm:grid-cols-5',
               )}>
                 {sizes.map(({ label, rows }) => (
                   <Button
                     key={rows}
                     variant="secondary"
-                    size={selectedMode === 'expert' ? 'md' : 'sm'}
+                    size={selectedMode === 'expert' ? 'md' : 'lg'}
+                    className={selectedMode !== 'expert' ? 'sm:px-3 sm:py-1.5 sm:text-base' : ''}
                     onClick={() => handleSizeSelect(rows)}
                   >
                     {label}
@@ -154,7 +155,7 @@ export function Home() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
-              className="w-full max-w-md flex flex-col gap-3"
+              className="w-full flex flex-col gap-5"
             >
               {GAME_MODES.map((mode, i) => {
                 const Icon = iconMap[mode.icon]
@@ -168,7 +169,7 @@ export function Home() {
                     aria-disabled={mode.comingSoon ? 'true' : undefined}
                     tabIndex={mode.comingSoon ? -1 : undefined}
                     className={cn(
-                      'flex items-center gap-4 p-4 w-full text-left',
+                      'flex items-center gap-5 p-5 sm:p-6 w-full text-left',
                       'bg-[var(--color-surface)]',
                       'border-[var(--border-width)] border-[var(--color-border)]',
                       'shadow-[var(--shadow-offset)_0px_0px_var(--color-shadow)]',
@@ -180,12 +181,13 @@ export function Home() {
                     )}
                   >
                     {Icon && (
-                      <div className="p-2 bg-[var(--color-bg)] border-[var(--border-width)] border-[var(--color-border)]">
-                        <Icon size={22} className="text-[var(--color-accent)]" />
+                      <div className="p-3 sm:p-4 bg-[var(--color-bg)] border-[var(--border-width)] border-[var(--color-border)]">
+                        <Icon size={26} className="sm:hidden text-[var(--color-accent)]" />
+                        <Icon size={32} className="hidden sm:block text-[var(--color-accent)]" />
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <div className="font-bold text-base flex items-center gap-2">
+                      <div className="font-bold text-lg flex items-center gap-2">
                         {mode.title}
                         {mode.comingSoon && (
                           <span className="text-[10px] font-bold px-1.5 py-0.5 bg-[var(--color-primary)] text-[var(--color-secondary)]">
@@ -193,7 +195,7 @@ export function Home() {
                           </span>
                         )}
                       </div>
-                      <div className="text-xs text-[var(--color-text-muted)]">
+                      <div className="text-sm text-[var(--color-text-muted)]">
                         {mode.description}
                       </div>
                     </div>

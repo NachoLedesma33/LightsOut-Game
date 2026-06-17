@@ -191,9 +191,9 @@ export function Game() {
 
   return (
     <PageTransition>
-      <div className="flex flex-col items-center gap-4 sm:gap-6">
+      <div className="flex flex-col gap-6 sm:gap-8 pt-4">
         {/* Header row */}
-        <div className="flex items-center justify-between w-full max-w-sm">
+        <div className="flex items-center justify-between w-full">
           <Button variant="ghost" size="sm" onClick={() => navigate('/')} aria-label="Volver al inicio">
             <ArrowLeft size={16} aria-hidden="true" />
             <span className="hidden sm:inline">Volver</span>
@@ -209,7 +209,7 @@ export function Game() {
           ) : (
             <div className="flex items-center gap-2 sm:gap-3">
               <span className={cn(
-                'text-[10px] sm:text-xs font-bold px-1.5 py-0.5 border-[var(--border-width)] uppercase',
+                'text-xs sm:text-sm font-bold px-2 py-1 border-[var(--border-width)] uppercase',
                 difficultyBorders[storeDifficulty],
                 difficultyColors[storeDifficulty],
               )}>
@@ -223,7 +223,7 @@ export function Game() {
 
           <div className="flex gap-1">
             <span
-              className="inline-flex items-center justify-center h-8 min-w-[2rem] px-2 text-xs font-bold border-[var(--border-width)] border-[var(--color-border)] bg-[var(--color-surface)] select-none"
+              className="inline-flex items-center justify-center h-9 min-w-[2.25rem] px-3 text-xs font-bold border-[var(--border-width)] border-[var(--color-border)] bg-[var(--color-surface)] select-none"
               aria-label={`${moveCount} movimientos`}
             >
               {moveCount}
@@ -260,7 +260,7 @@ export function Game() {
           variants={gridVariants}
           initial="hidden"
           animate="visible"
-          className="grid"
+          className="grid self-center"
           style={{
             gridTemplateColumns: `repeat(${gridSize}, 1fr)`,
             gap: `${gap}px`,
@@ -298,35 +298,37 @@ export function Game() {
         </motion.div>
 
         {/* Action buttons */}
-        <div className="flex gap-3">
+        <div className="flex gap-5 sm:gap-4 self-center">
           <Button
             variant="secondary"
-            size="sm"
+            size="md"
+            className="px-5 py-3 sm:px-4 sm:py-2 sm:text-sm"
             onClick={undo}
             disabled={status !== 'playing' || moveCount === 0}
             aria-label="Deshacer"
           >
-            <Undo2 size={16} aria-hidden="true" />
+            <Undo2 size={18} aria-hidden="true" />
             <span className="hidden sm:inline">Deshacer</span>
           </Button>
           <Button
             variant="primary"
-            size="sm"
+            size="md"
+            className="relative px-5 py-3 sm:px-4 sm:py-2 sm:text-sm"
             onClick={useHint}
             disabled={status !== 'playing'}
-            className="relative"
             aria-label="Usar pista"
           >
-            <Lightbulb size={16} aria-hidden="true" />
+            <Lightbulb size={18} aria-hidden="true" />
             <span className="hidden sm:inline">Pista</span>
           </Button>
           <Button
             variant="ghost"
-            size="sm"
+            size="md"
+            className="px-5 py-3 sm:px-4 sm:py-2 sm:text-sm"
             onClick={reset}
             aria-label="Reiniciar partida"
           >
-            <RotateCcw size={16} aria-hidden="true" />
+            <RotateCcw size={18} aria-hidden="true" />
             <span className="hidden sm:inline">Reiniciar</span>
           </Button>
         </div>
@@ -337,7 +339,7 @@ export function Game() {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: reduced ? 0 : 0.2 }}
-            className="text-xs font-bold text-[var(--color-text-muted)] text-center max-w-xs px-3 py-1.5 bg-[var(--color-surface)] border border-[var(--color-border)]"
+            className="text-xs font-bold text-[var(--color-text-muted)] text-center max-w-xs px-4 py-2 bg-[var(--color-surface)] border border-[var(--color-border)] self-center"
           >
             {hintData.description}
           </motion.div>
@@ -363,7 +365,7 @@ export function Game() {
             <motion.div
               initial={reduced ? { opacity: 0 } : { y: 40 }}
               animate={reduced ? { opacity: 1 } : { y: 0 }}
-              className="bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)] shadow-[var(--shadow-offset)_0px_0px_var(--color-shadow)] p-8 text-center max-w-sm mx-4"
+              className="bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)] shadow-[var(--shadow-offset)_0px_0px_var(--color-shadow)] p-6 sm:p-8 text-center w-[calc(100%-2rem)] max-w-sm"
             >
               <motion.div
                 initial={reduced ? { opacity: 0 } : { rotate: -10, scale: 0 }}
@@ -387,11 +389,11 @@ export function Game() {
               <p className="text-[var(--color-text-muted)] mb-6">
                 {moveCount} movimientos {elapsedTime > 0 && `en ${formatTime(elapsedTime)}`}
               </p>
-              <div className="flex gap-3 justify-center">
-                <Button variant="primary" onClick={() => navigate(isDaily ? '/' : '')}>
+              <div className="flex gap-4 justify-center">
+                <Button variant="primary" size="lg" onClick={() => navigate(isDaily ? '/' : '')}>
                   {isDaily ? 'Volver al inicio' : 'Nueva partida'}
                 </Button>
-                <Button variant="ghost" onClick={() => navigate('/')}>
+                <Button variant="ghost" size="lg" onClick={() => navigate('/')}>
                   Inicio
                 </Button>
               </div>

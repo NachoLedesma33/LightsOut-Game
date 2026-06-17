@@ -13,7 +13,7 @@ export function RootLayout() {
     <div className="flex min-h-svh flex-col bg-[var(--color-bg)]">
       <ScrollToTop />
       <TopBar />
-      <main className={cn('flex-1 mx-auto w-full max-w-4xl px-4 py-6', 'pb-16 sm:pb-6')}>
+      <main className={cn('flex-1 mx-auto w-full max-w-4xl px-4 py-6', 'pb-20 sm:pb-6')}>
         <AnimatePresence mode="wait">
           <Outlet key={location.pathname} />
         </AnimatePresence>

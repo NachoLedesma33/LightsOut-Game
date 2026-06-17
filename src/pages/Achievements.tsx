@@ -78,7 +78,7 @@ const AchievementCard = memo(function AchievementCard({ def, unlocked, date, sta
   return (
     <motion.div
       variants={cardVariants}
-      className={`flex items-center gap-3 p-3 bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)] ${!unlocked ? 'opacity-50' : ''}`}
+      className={`flex items-center gap-4 p-4 sm:p-5 bg-[var(--color-surface)] border-[var(--border-width)] border-[var(--color-border)] ${!unlocked ? 'opacity-50' : ''}`}
     >
       <div
         className={`flex items-center justify-center w-10 h-10 shrink-0 bg-[var(--color-bg)] border-[var(--border-width)] border-[var(--color-border)] text-lg ${unlocked ? '' : ''}`}
@@ -118,8 +118,8 @@ export function Achievements() {
 
   return (
     <PageTransition>
-      <div className="flex flex-col items-center gap-6 sm:gap-8 pt-4 sm:pt-8 pb-8">
-        <div className="flex flex-col items-center gap-2">
+      <div className="flex flex-col gap-10 pt-6 sm:pt-10 pb-12">
+        <div className="flex flex-col gap-2">
           <Trophy size={48} className="text-[var(--color-primary)]" />
           <h1 className="text-3xl font-black text-[var(--color-text)] m-0">
             Logros
@@ -130,7 +130,7 @@ export function Achievements() {
         </div>
 
         {unlockedCount > 0 && (
-          <div className="w-full max-w-sm h-2 bg-[var(--color-bg)] border-[var(--border-width)] border-[var(--color-border)]">
+          <div className="w-full h-2 bg-[var(--color-bg)] border-[var(--border-width)] border-[var(--color-border)]">
             <div
               className="h-full bg-[var(--color-primary)] transition-all duration-500"
               style={{ width: `${pct}%` }}
@@ -138,7 +138,7 @@ export function Achievements() {
           </div>
         )}
 
-        <div className="w-full max-w-sm flex flex-col gap-5">
+        <div className="w-full flex flex-col gap-8">
           {CATEGORIES.map((cat) => {
             const catDefs = cat.ids.map((id) => defMap[id]).filter(Boolean)
             if (catDefs.length === 0) return null
@@ -154,7 +154,7 @@ export function Achievements() {
                   <span>{cat.name}</span>
                   <span className="text-[var(--color-text-muted)]">({catUnlocked}/{catDefs.length})</span>
                 </h2>
-                <div className="flex flex-col gap-1.5">
+                <div className="flex flex-col gap-4">
                   {catDefs.map((def) => (
                     <AchievementCard
                       key={def.id}

@@ -1,6 +1,8 @@
 @import "tailwindcss";
 
 @theme {
+  --breakpoint-xs: 480px;
+
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
 
@@ -51,13 +53,10 @@ body {
 }
 
 #root {
-  transition: background-color 0.3s ease;
-}
-
-#root {
   min-height: 100svh;
   display: flex;
   flex-direction: column;
+  transition: background-color 0.3s ease;
 }
 
 *,

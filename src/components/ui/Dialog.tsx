@@ -42,7 +42,7 @@ export const DialogContent = forwardRef<
       {...props}
     >
       {children}
-      <DialogPrimitive.Close className="absolute top-4 right-4 cursor-pointer bg-transparent border-none text-[var(--color-text-muted)] hover:text-[var(--color-text)]" aria-label="Cerrar">
+      <DialogPrimitive.Close className="absolute top-4 right-4 flex items-center justify-center p-1 cursor-pointer bg-transparent border-none text-[var(--color-text-muted)] hover:text-[var(--color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]" aria-label="Cerrar">
         <X size={18} aria-hidden="true" />
       </DialogPrimitive.Close>
     </DialogPrimitive.Content>
